@@ -1,1 +1,92 @@
 @import "tailwindcss";
+
+:root {
+  --st-color-background: #f6f8fc;
+  --st-color-foreground: #172033;
+  --st-color-surface: #ffffff;
+  --st-color-surface-muted: #eef2f7;
+  --st-color-border: #d9e1ec;
+  --st-color-primary: #4f46e5;
+  --st-color-primary-foreground: #ffffff;
+  --st-color-muted-foreground: #536176;
+  --st-color-focus: #4f46e5;
+  --st-font-sans: "Inter", "Noto Sans SC", "Microsoft YaHei", sans-serif;
+  --st-spacing-page: 1rem;
+  --st-spacing-page-lg: 2rem;
+  --st-spacing-header: 4rem;
+  --st-spacing-touch: 2.75rem;
+  --st-radius-card: 0.75rem;
+  --st-radius-control: 0.625rem;
+  --st-shadow-card: 0 0.5rem 1.5rem rgb(15 23 42 / 8%);
+  --st-container-content: 72rem;
+  --st-focus-ring-width: 0.125rem;
+  --st-focus-ring-offset: 0.125rem;
+}
+
+@theme inline {
+  --color-background: var(--st-color-background);
+  --color-foreground: var(--st-color-foreground);
+  --color-surface: var(--st-color-surface);
+  --color-surface-muted: var(--st-color-surface-muted);
+  --color-border: var(--st-color-border);
+  --color-primary: var(--st-color-primary);
+  --color-primary-foreground: var(--st-color-primary-foreground);
+  --color-muted-foreground: var(--st-color-muted-foreground);
+  --color-focus: var(--st-color-focus);
+  --font-sans: var(--st-font-sans);
+  --spacing-page: var(--st-spacing-page);
+  --spacing-page-lg: var(--st-spacing-page-lg);
+  --spacing-header: var(--st-spacing-header);
+  --spacing-touch: var(--st-spacing-touch);
+  --radius-card: var(--st-radius-card);
+  --radius-control: var(--st-radius-control);
+  --shadow-card: var(--st-shadow-card);
+  --container-content: var(--st-container-content);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --st-color-background: #101827;
+    --st-color-foreground: #edf2f7;
+    --st-color-surface: #172235;
+    --st-color-surface-muted: #202d42;
+    --st-color-border: #334155;
+    --st-color-primary: #8b9cff;
+    --st-color-primary-foreground: #101827;
+    --st-color-muted-foreground: #a9b6c9;
+    --st-color-focus: #a5b4fc;
+    --st-shadow-card: 0 0.5rem 1.5rem rgb(0 0 0 / 24%);
+  }
+}
+
+html {
+  color-scheme: light;
+}
+
+@media (prefers-color-scheme: dark) {
+  html {
+    color-scheme: dark;
+  }
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  min-width: 20rem;
+  background: var(--st-color-background);
+  color: var(--st-color-foreground);
+  font-family: var(--st-font-sans);
+  font-size: 1rem;
+  line-height: 1.5;
+}
+
+a {
+  color: inherit;
+}
+
+:focus-visible {
+  outline: var(--st-focus-ring-width) solid var(--st-color-focus);
+  outline-offset: var(--st-focus-ring-offset);
+}
