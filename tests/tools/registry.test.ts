@@ -9,14 +9,16 @@ describe("tool registry", () => {
   it("returns all registered tools", () => {
     const tools = getAllTools();
 
-    expect(tools).toHaveLength(2);
+    expect(tools).toHaveLength(3);
     expect(tools[0]?.id).toBe("char-count");
     expect(tools[1]?.id).toBe("unit-convert");
+    expect(tools[2]?.id).toBe("base-convert");
   });
 
   it("finds a tool by id", () => {
     expect(getToolById("char-count")?.name).toBe("字数统计");
     expect(getToolById("unit-convert")?.name).toBe("单位换算");
+    expect(getToolById("base-convert")?.name).toBe("进制转换");
   });
 
   it("returns undefined for an unknown id", () => {
@@ -30,6 +32,7 @@ describe("tool registry", () => {
     expect(getToolsByCategory("dev")).toHaveLength(0);
     expect(getToolsByCategory("convert").map((tool) => tool.id)).toEqual([
       "unit-convert",
+      "base-convert",
     ]);
   });
 
@@ -55,6 +58,17 @@ describe("tool registry", () => {
       chineseCharacterCount: 2,
       englishWordCount: 0,
       lineCount: 1,
+    });
+  });
+
+  it("exposes the base-convert run function", () => {
+    const tool = getToolById("base-convert");
+
+    expect(
+      tool?.run({ value: "1010", inputBaseId: "binary" }),
+    ).toMatchObject({
+      decimal: "10",
+      hexadecimal: "A",
     });
   });
 });

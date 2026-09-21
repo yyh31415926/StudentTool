@@ -1,8 +1,10 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
+import { BaseConverterTemplate } from "@/components/tools/templates/BaseConverterTemplate";
 import { Card } from "@/components/ui/Card";
 import { CounterTemplate } from "@/components/tools/templates/CounterTemplate";
 import { ConverterTemplate } from "@/components/tools/templates/ConverterTemplate";
+import { baseDefinitions } from "@/lib/tools/base-convert";
 import { unitConvertGroups } from "@/lib/tools/unit-convert";
 import { getAllTools, getToolById } from "@/lib/tools/registry";
 
@@ -54,6 +56,8 @@ export default async function ToolPage({ params }: ToolPageProps) {
           <CounterTemplate exampleInput={tool.exampleInput} />
         ) : tool.template === "converter" ? (
           <ConverterTemplate unitGroups={unitConvertGroups} />
+        ) : tool.template === "base-converter" ? (
+          <BaseConverterTemplate bases={baseDefinitions} />
         ) : null}
       </div>
     </div>
