@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { Card } from "@/components/ui/Card";
 import { CounterTemplate } from "@/components/tools/templates/CounterTemplate";
+import { ConverterTemplate } from "@/components/tools/templates/ConverterTemplate";
+import { unitConvertGroups } from "@/lib/tools/unit-convert";
 import { getAllTools, getToolById } from "@/lib/tools/registry";
 
 type ToolPageProps = {
@@ -50,6 +52,8 @@ export default async function ToolPage({ params }: ToolPageProps) {
         </Card>
         {tool.template === "counter" ? (
           <CounterTemplate exampleInput={tool.exampleInput} />
+        ) : tool.template === "converter" ? (
+          <ConverterTemplate unitGroups={unitConvertGroups} />
         ) : null}
       </div>
     </div>

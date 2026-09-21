@@ -9,12 +9,14 @@ describe("tool registry", () => {
   it("returns all registered tools", () => {
     const tools = getAllTools();
 
-    expect(tools).toHaveLength(1);
+    expect(tools).toHaveLength(2);
     expect(tools[0]?.id).toBe("char-count");
+    expect(tools[1]?.id).toBe("unit-convert");
   });
 
   it("finds a tool by id", () => {
     expect(getToolById("char-count")?.name).toBe("字数统计");
+    expect(getToolById("unit-convert")?.name).toBe("单位换算");
   });
 
   it("returns undefined for an unknown id", () => {
@@ -26,6 +28,9 @@ describe("tool registry", () => {
       "char-count",
     ]);
     expect(getToolsByCategory("dev")).toHaveLength(0);
+    expect(getToolsByCategory("convert").map((tool) => tool.id)).toEqual([
+      "unit-convert",
+    ]);
   });
 
   it("exposes the minimal definition contract", () => {
