@@ -1,4 +1,4 @@
 import type { ToolDefinition } from "@/types/tools";
-import { mockTool } from "./mock-tool";
+import { charCountTool } from "./char-count";
 
-export const toolDefinitions = [mockTool] satisfies readonly ToolDefinition[];
+export const toolDefinitions = [charCountTool] satisfies readonly ToolDefinition[];

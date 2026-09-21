@@ -10,11 +10,11 @@ describe("tool registry", () => {
     const tools = getAllTools();
 
     expect(tools).toHaveLength(1);
-    expect(tools[0]?.id).toBe("mock-tool");
+    expect(tools[0]?.id).toBe("char-count");
   });
 
   it("finds a tool by id", () => {
-    expect(getToolById("mock-tool")?.name).toBe("示例工具");
+    expect(getToolById("char-count")?.name).toBe("字数统计");
   });
 
   it("returns undefined for an unknown id", () => {
@@ -22,28 +22,34 @@ describe("tool registry", () => {
   });
 
   it("filters tools by category", () => {
-    expect(getToolsByCategory("dev").map((tool) => tool.id)).toEqual([
-      "mock-tool",
+    expect(getToolsByCategory("text").map((tool) => tool.id)).toEqual([
+      "char-count",
     ]);
-    expect(getToolsByCategory("convert")).toHaveLength(0);
+    expect(getToolsByCategory("dev")).toHaveLength(0);
   });
 
   it("exposes the minimal definition contract", () => {
-    const tool = getToolById("mock-tool");
+    const tool = getToolById("char-count");
 
     expect(tool).toMatchObject({
-      id: "mock-tool",
-      name: "示例工具",
-      category: "dev",
+      id: "char-count",
+      name: "字数统计",
+      category: "text",
       description: expect.any(String),
-      template: "placeholder",
+      template: "counter",
+      exampleInput: expect.any(String),
       run: expect.any(Function),
     });
   });
 
-  it("keeps the mock run function pure and environment independent", () => {
-    const tool = getToolById("mock-tool");
+  it("exposes the char-count run function", () => {
+    const tool = getToolById("char-count");
 
-    expect(tool?.run("sample input")).toBe("sample input");
+    expect(tool?.run("你好")).toMatchObject({
+      characterCount: 2,
+      chineseCharacterCount: 2,
+      englishWordCount: 0,
+      lineCount: 1,
+    });
   });
 });

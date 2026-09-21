@@ -8,5 +8,6 @@ export type ToolDefinition = {
   category: ToolCategory;
   description: string;
   template: string;
+  exampleInput: string;
   run: ToolRun;
 };
