@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import type { ToolAction } from "@/types/tools";
 import { getToolById } from "@/lib/tools/registry";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
@@ -42,6 +43,11 @@ export function TextTransformTemplate({
   const [error, setError] = useState<string | undefined>();
   const [copyState, setCopyState] = useState<CopyState>("idle");
   const tool = getToolById(toolId);
+  const actions: readonly ToolAction[] = tool?.actions ?? [];
+  const [selectedActionId, setSelectedActionId] = useState<string | undefined>(
+    () => actions[0]?.id,
+  );
+  const activeActionId = selectedActionId ?? actions[0]?.id;
 
   useEffect(() => {
     if (copyState !== "copied") {
@@ -52,7 +58,7 @@ export function TextTransformTemplate({
     return () => window.clearTimeout(timer);
   }, [copyState]);
 
-  function runTransform() {
+  function runTransform(actionId: string | undefined = activeActionId) {
     if (!input.trim()) {
       setOutput("");
       setError(emptyHint ?? "请输入文本后再运行。");
@@ -66,15 +72,37 @@ export function TextTransformTemplate({
     }
 
     try {
-      setOutput(formatOutput(tool.run(input)));
+      // 有动作组的工具由定义声明操作，模板只负责显示与派发。
+      const result =
+        actions.length > 0
+          ? tool.run({ text: input, action: actionId })
+          : tool.run(input);
+
+      setOutput(formatOutput(result));
       setError(undefined);
+      setCopyState("idle");
     } catch (caughtError) {
       setOutput("");
       setError(
         errorHint ??
           (caughtError instanceof Error ? caughtError.message : "输入无法处理。"),
       );
+      setCopyState("idle");
     }
+  }
+
+  function selectAction(nextActionId: string) {
+    setSelectedActionId(nextActionId);
+
+    if (!input.trim()) {
+      setOutput("");
+      setError(undefined);
+      setCopyState("idle");
+      return;
+    }
+
+    // 切换操作时立刻用当前输入重跑，避免"点了没反应"。
+    runTransform(nextActionId);
   }
 
   function clearInput() {
@@ -106,10 +134,35 @@ export function TextTransformTemplate({
             输入内容后运行工具，结果会显示在输出区域。
           </p>
         </div>
-        <div className="flex gap-2">
-          <Button size="sm" type="button" onClick={runTransform}>
-            运行
-          </Button>
+        <div className="flex flex-wrap gap-2">
+          {actions.length > 0 ? (
+            <div
+              role="group"
+              aria-label="选择操作"
+              className="flex flex-wrap gap-2"
+            >
+              {actions.map((action) => {
+                const isActive = action.id === activeActionId;
+
+                return (
+                  <Button
+                    key={action.id}
+                    size="sm"
+                    type="button"
+                    variant={isActive ? "primary" : "secondary"}
+                    aria-pressed={isActive}
+                    onClick={() => selectAction(action.id)}
+                  >
+                    {action.label}
+                  </Button>
+                );
+              })}
+            </div>
+          ) : (
+            <Button size="sm" type="button" onClick={() => runTransform()}>
+              运行
+            </Button>
+          )}
           <Button size="sm" type="button" variant="secondary" onClick={() => setInput(exampleInput)}>
             试试示例
           </Button>

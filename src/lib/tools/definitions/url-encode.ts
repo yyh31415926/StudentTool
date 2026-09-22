@@ -23,6 +23,8 @@ export const urlEncodeTool: ToolDefinition = {
   tip: "网址查询串里的 + 表示空格，本工具按标准 %20 处理：+ 会原样保留，需要还原成空格时把它改成 %20 再运行。",
   exampleInput: "search%3Fq%3D%E4%BD%A0%E5%A5%BD",
   emptyHint: "请输入需要编码或解码的内容。",
+  errorHint:
+    "无法处理。请确认百分号 % 后是两位十六进制，并检查内容是否完整、转义是否被截断。",
   order: 7,
   run: runUrlCodec,
 };

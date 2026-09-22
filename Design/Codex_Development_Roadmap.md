@@ -40,7 +40,7 @@
 | 项目最终名称 | 品牌、存储键名前缀、角色命名 | 建议 Phase 0 前定，最晚 Phase 5 前定 |
 | 视觉 token 具体色值（主色/辅色/灰阶） | 影响全站观感 | **Phase 1 前置条件** |
 | 主角色美术资产 | 阻塞 Phase 1（Logo）与 Phase 7 | 先用占位资源，Phase 7 替换 |
-| Markdown 渲染库选型 + XSS 过滤方案 | 阻塞 Phase 8 的 Markdown 工具 | Phase 8 前置条件 |
+| Markdown 渲染库选型 + XSS 过滤方案 | 阻塞"Markdown 预览"这个工具（**已移出第一版，保留为后续规划**），不阻塞第一版 | 该工具排期时再定（不再是 Phase 8 前置条件） |
 
 ### 0.3 阶段总览
 
@@ -54,7 +54,7 @@
 | 5 | 用户体验系统 | 收藏 + 最近使用 + 存储封装 | 3 | Phase 2 |
 | 6 | 首页完善 | 搜索 + 分类 + 常用 + 我的工具箱 | 3 | Phase 5 |
 | 7 | 动漫视觉系统 | 角色组件 + 装饰 + 空状态 + 反馈 | 3 | Phase 1 |
-| 8 | 剩余工具 | Markdown + JSON + Base64 | 6 | Phase 3、4 |
+| 8 | 剩余工具 | JSON 格式化 + Base64 转换（URL 编码解码已上线） | 6 | Phase 3、4 |
 | 9 | 质量收尾 | 响应式 + 无障碍 + 性能达标 | 6 | Phase 6、8 |
 | 10 | SEO 与部署 | 上线可用 | 6 | Phase 9 |
 
@@ -293,7 +293,7 @@ Phase 0 ──→ Phase 1 ──→ Phase 2 ──→ Phase 3 ──→ Phase 4 
 
 | # | 任务 | 说明 |
 | --- | --- | --- |
-| 1 | `ToolDefinition` 类型 | 完整契约字段（id / name / category / tags / summary / description / tip / exampleInput / keywords / pinyin / order / template / run / emptyHint / errorHint / customUI / seoFaq / hidden） |
+| 1 | `ToolDefinition` 类型 | 完整契约字段（id / name / category / tags / summary / description / tip / exampleInput / keywords / pinyin / order / template / actions / run / emptyHint / errorHint / customUI / seoFaq / hidden） |
 | 2 | 工具注册表 | 汇总所有工具定义 + 查询函数（getAllTools / getToolById / getToolsByCategory / getToolIds） |
 | 3 | 一个测试工具定义 | 临时占位工具（不进最终产品），仅用于验证机制，**验证后删除** |
 | 4 | 动态工具路由 | `src/app/tools/[toolId]/page.tsx`，含 `generateStaticParams` + `generateMetadata` |
@@ -668,41 +668,52 @@ Phase 0 ──→ Phase 1 ──→ Phase 2 ──→ Phase 3 ──→ Phase 4 
 
 ---
 
-## 10. Phase 8 · 剩余工具：Markdown + JSON + Base64
+## 10. Phase 8 · 剩余工具：JSON 格式化 + Base64 转换
 
-> ⚠️ 本 Phase 为**补齐第一版范围**而追加。用户的原始路线在 Phase 7 结束，但第一版目标是 **6 个工具零缺陷**，若缺这 3 个，路线与项目红线（AGENT_RULES §10.5 第三条）直接冲突，故必须纳入。
+> ⚠️ 本 Phase 为**补齐第一版范围**而追加。用户的原始路线在 Phase 7 结束，但第一版目标是 **6 个工具零缺陷**（AGENT_RULES §10.5 第三条），本 Phase 交付其中尚未实现的 2 个：JSON 格式化、Base64 转换。
+>
+> **`markdown-preview` 已移出第一版**（保留为后续规划，设计不删除）：它需要引入 Markdown 渲染库并做 XSS 过滤，是第一版唯一会引入第三方依赖的工具，方案选定前不进入开发（`Documents/WebsiteDesignDocument_v0.2.md` §3.2 / §6.2 / 附录 A 第 8 项）。该工具排期时另开 Phase，**不影响本 Phase 范围与后续 Phase 顺序**。
 
 ### 目标
 
-**交付 Markdown 预览、JSON 格式化、Base64 转换，工具总数达到 6 个。**
+**交付 JSON 格式化与 Base64 转换。连同 Phase 3、4 的 3 个工具（字数统计、单位换算、进制转换）与已上线的 URL 编码解码，第一版 6 个工具全部就位。**
 
 ### 每个工具的模板与特殊处理
 
 | 工具 | 复用模板 | 特殊处理 |
 | --- | --- | --- |
 | **Base64** `base64` | ✅ 复用 TextTransformTemplate | **Unicode 正确处理**（中文、Emoji 是最常见出错点）；编解码双向 |
-| **JSON 格式化** `json-format` | ✅ 复用 TextTransformTemplate | 解析失败必须给出**行号与原因**；测试非法 JSON、超长、深层嵌套 |
-| **Markdown 预览** `markdown-preview` | ✅ 复用 SplitPreviewTemplate（左右分栏） | **XSS 防护**（全站唯一脚本注入风险点）；需选型渲染库并过滤危险标签；这是唯一引入第三方依赖的工具 |
+| **JSON 格式化** `json-format` | ✅ 复用 TextTransformTemplate（**多操作**：格式化 / 压缩 / 校验） | 解析失败必须给出**行号、列号与原因**；**格式化与压缩只改变空白，不得改写数字、字符串与转义写法**（超出 JavaScript 精确整数范围的整数必须逐字符保留）；测试非法 JSON、超长、深层嵌套、大整数 |
+
+> **本 Phase 会给"文本变形"模板增加一次能力扩展：多操作（`actions`）。**
+> 模板按定义**是否声明 `actions`** 决定渲染单个"运行"按钮还是操作按钮组；未声明 `actions` 的工具（Base64、URL 编码）行为完全不变。
+> 这是**模板能力**，不是为某个工具写的分支。**模板总数仍为 5，不新增模板。**
+
+> **`markdown-preview` 已移出第一版**（保留为后续规划，设计不删除）：本 Phase **不交付**该工具，也不需要引入任何渲染库。
+> 它的既有要求全部保留、随工具一起排期：复用 SplitPreviewTemplate（已实现）、**XSS 防护**（全站唯一脚本注入风险点）、渲染库选型与体积评估、XSS 专门测试用例。
+> 第一版因此**不引入任何第三方依赖**。
 
 ### 任务清单
 
 | # | 任务 | 说明 |
 | --- | --- | --- |
 | 1 | Base64 定义 + 算法 + 测试 | Unicode 编码解码；双向 |
-| 2 | JSON 格式化定义 + 算法 + 测试 | 错误行号；格式化 + 校验 |
-| 3 | Markdown 定义 + 渲染库选型 + XSS 过滤 + 测试 | 选型需在"修改前说明"中论证；XSS 必须有专门测试 |
+| 2 | JSON 格式化定义 + 算法 + 测试 | 格式化 + 压缩 + 校验；错误行号与列号；输出保真（数字 / 字符串 / 转义逐字符保留） |
+| 3 | "文本变形"模板支持多操作（`actions`） | **数据驱动**：只为声明了 `actions` 的工具渲染操作按钮组；未声明者行为不变 |
 | 4 | 各自页面（复用模板） | 不新增模板，模板总数仍 ≤5 |
 
 ### 涉及目录
 
-- `src/lib/tools/definitions/`（base64、json-format、markdown-preview）
-- `src/components/tools/templates/`（TextTransformTemplate、SplitPreviewTemplate）
+- `src/lib/tools/definitions/`（base64、json-format）
+- `src/components/tools/templates/`（TextTransformTemplate）
+- `src/types/tools.ts`（契约新增可选字段 `actions`，属公共接口变更，走 AGENT_RULES §7.5）
 - `tests/tools/`
 
 ### 不要做
 
-- ❌ 不新增模板（复用 TextTransform / SplitPreview）
-- ❌ 不做文件上传、不引入超出必要范围的库（Markdown 渲染库是唯一例外）
+- ❌ 不新增模板（复用现有 TextTransform 模板）
+- ❌ 不在"文本变形"模板里为单个工具加条件分支（多操作必须由 `actions` 数据驱动）
+- ❌ 不做文件上传、不引入超出必要范围的库（Markdown 渲染库随该工具一起移出第一版，本 Phase 不引入任何第三方库）
 
 ### Codex 工作规范
 
@@ -711,24 +722,25 @@ Phase 0 ──→ Phase 1 ──→ Phase 2 ──→ Phase 3 ──→ Phase 4 
 | **先读** | `Documents/WebsiteDesignDocument_v0.2.md` §3.6（专项要求）；`AGENT_RULES.md` §3.4（依赖管理）、§4.4 |
 | **修改目录** | `src/lib/tools/definitions/`、`src/components/tools/templates/`、`tests/tools/` |
 | **不碰** | `Documents/`、`Design/`、首页、存储 |
-| **完成后测试** | 各工具 ≥10 组用例；Markdown 额外做 XSS 用例；`lint` / `build` / `test` 通过 |
+| **完成后测试** | 各工具 ≥10 组用例（含 JSON 输出保真用例）；`lint` / `build` / `test` 通过 |
 
 ### 验收标准（门禁）
 
-- [ ] 6 个工具全部完整可用，各 ≥10 组边界用例通过
+- [ ] 第一版 6 个工具（单位换算、字数统计、进制转换、JSON 格式化、Base64 转换、URL 编码解码）全部完整可用，各 ≥10 组边界用例通过
 - [ ] Base64 正确处理中文与 Emoji（双向）
-- [ ] JSON 错误提示含**行号与原因**，不只说"格式错误"
-- [ ] Markdown 渲染过滤危险标签，XSS 测试通过
+- [ ] JSON 三个操作（格式化 / 压缩 / 校验）均可用；错误提示含**行号、列号与原因**，不只说"格式错误"
+- [ ] JSON 格式化与压缩**不改变数字、字符串与转义写法**（超出 JavaScript 精确整数范围的整数逐字符不变）
+- [ ] 未声明 `actions` 的工具（Base64、URL 编码）交互与行为不变
 - [ ] 模板总数 ≤5（Counter + ValueConvert + TextTransform + SplitPreview + 单位换算自定义）
-- [ ] 首页 / 分类 / 搜索 / 站点地图自动出现 3 个新工具
+- [ ] 首页 / 分类 / 搜索 / 站点地图自动出现 2 个新工具（JSON 格式化、Base64 转换）
 
 ### 主要风险
 
 | 风险 | 应对 |
 | --- | --- |
-| Markdown XSS | 渲染库选型时论证过滤策略；专门安全用例 |
+| Markdown XSS（**随工具移出第一版**） | 不阻塞本 Phase；该工具排期时再论证渲染库选型与过滤策略，并补 XSS 专门用例 |
 | Base64 Unicode | 用中文 + Emoji 作为必测用例 |
-| 为 Markdown 引入过重的库 | 选型时说明体积影响，选择够用且安全的方案 |
+| 为 Markdown 引入过重的库（**随工具移出第一版**） | 第一版不引入任何第三方库；该工具排期时再评估体积影响 |
 
 ---
 
@@ -956,9 +968,12 @@ Phase 0 ──→ Phase 1 ──→ Phase 2 ──→ Phase 3 ──→ Phase 4 
 | P0 | 单位换算 | `unit-convert` | `convert` |
 | P0 | 字数统计 | `char-count` | `text` |
 | P0 | 进制转换 | `base-convert` | `convert` |
-| P1 | Markdown 预览 | `markdown-preview` | `text` |
 | P1 | JSON 格式化 | `json-format` | `dev` |
 | P2 | Base64 转换 | `base64` | `dev` |
+| P2 | URL 编码解码 | `url-encode` | `dev` |
+| **后续规划**（不计入第一版） | Markdown 预览 | `markdown-preview` | `text` |
+
+> 上表为**第一版 6 个工具**的权威清单（与 `Documents/WebsiteDesignDocument_v0.2.md` §3.2 一致）。`markdown-preview` 保留为后续规划，设计不删除；`url-encode` 为第一版已上线工具。
 
 ### 分类 slug
 
@@ -974,8 +989,8 @@ Phase 0 ──→ Phase 1 ──→ Phase 2 ──→ Phase 3 ──→ Phase 4 
 | --- | --- |
 | CounterTemplate | `char-count` |
 | ValueConvertTemplate | `base-convert` |
-| TextTransformTemplate | `base64`、`json-format` |
-| SplitPreviewTemplate | `markdown-preview` |
+| TextTransformTemplate | `base64`、`url-encode`（单操作）；`json-format`（多操作：格式化 / 压缩 / 校验） |
+| SplitPreviewTemplate | `markdown-preview`（**后续规划，不在第一版**） |
 | custom/UnitConvertUI | `unit-convert` |
 
 ## 附录 C · 与产品验收清单的映射
@@ -1000,6 +1015,22 @@ Phase 0 ──→ Phase 1 ──→ Phase 2 ──→ Phase 3 ──→ Phase 4 
 | 手机真机验证 | Phase 9 |
 | 源码可见标题说明（SEO） | Phase 10 |
 | 无广告、无弹窗、无强制注册 | 全程 |
+
+---
+
+## 附录 D · 修订记录
+
+（同一份文件原地修订，文件名保持不变。修订内容与 `Documents/WebsiteDesignDocument_v0.2.md` 的 v0.2 修订记录 1–3 同步。）
+
+| # | 日期 | 涉及章节 | 修订内容 |
+| --- | --- | --- | --- |
+| 1 | 2026-09-22 | Phase 2（任务清单 #1） | `ToolDefinition` 字段清单补可选字段 `actions`（多操作声明） |
+| 2 | 2026-09-22 | Phase 8（模板与特殊处理、任务清单、涉及目录、不要做、验收标准） | `json-format` 明确为**多操作**工具（格式化 / 压缩 / 校验）；"文本变形"模板增加数据驱动的多操作能力，未声明 `actions` 的工具行为不变；补充输出保真约束与对应验收项；涉及目录补 `src/types/tools.ts` |
+| 3 | 2026-09-22 | 附录 B（模板与工具映射） | 标注 `json-format` 为多操作，模板总数不变 |
+| 4 | 2026-09-22 | Phase 8（标题、说明、目标、模板与特殊处理、任务清单、涉及目录、不要做、完成后测试、验收标准、主要风险）、§0.2 待定项、§0.3 阶段总览 | 按 v0.2 定案统一**第一版工具口径**：`markdown-preview` **移出第一版**（保留为后续规划，要求与风险随工具保留），Phase 8 只交付 JSON 格式化 + Base64 转换；连同已上线的 `url-encode`，第一版仍为 6 个工具；Markdown 渲染库选型不再阻塞第一版 |
+| 5 | 2026-09-22 | 附录 B（工具 id 与优先级、模板与工具映射） | 第一版清单补 `url-encode`，`markdown-preview` 标记为"后续规划（不计入第一版）"；SplitPreviewTemplate 标注其工具不在第一版 |
+
+**各次修订均未改变**：阶段顺序与依赖关系、模板总数上限（仍 ≤5）、已上线工具 id、分类体系、验收门禁的严格程度。
 
 ---
 

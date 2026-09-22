@@ -25,7 +25,8 @@ export async function generateMetadata({
 
   return {
     title: `${tool.name} | StudentTool`,
-    description: tool.description,
+    description: tool.summary ?? tool.description,
+    keywords: tool.keywords ? [...tool.keywords] : undefined,
   };
 }
 

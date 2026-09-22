@@ -7,9 +7,9 @@
 | 文件性质 | **工程规范文件。本项目所有开发 Agent 的强制约束** |
 | 适用范围 | ChatGPT Codex、WorkBuddy、DeepSeek Harness，以及任何其他开发 Agent 或人类协作者 |
 | 效力等级 | **强制**。违反红线即为无效改动 |
-| 依赖文档 | `Documents/WebsiteDesignDocument_v0.2.md`（产品与视觉）、`Design/DeepSeek_Technical_Research.md`（技术推演） |
-| 版本 | v1.0 |
-| 生效日期 | 2026-09-19 |
+| 依赖文档 | `Documents/WebsiteDesignDocument_v0.2.md`（产品与视觉）、`Design/Codex_Development_Roadmap.md`（施工阶段与验收门禁）、`Design/DeepSeek_Technical_Research.md`（技术推演） |
+| 版本 | v1.1 |
+| 生效日期 | 2026-09-22 |
 | 说明 | 本文件只规定"必须怎么做、禁止怎么做"，不含任何代码实现 |
 
 ---
@@ -40,15 +40,16 @@
 
 ### 0.3 与其他文档的关系与冲突优先级
 
-本项目共有 5 份文档，效力不同。**冲突时按以下顺序判断：**
+本项目共有 6 份文档，效力不同。**冲突时按以下顺序判断：**
 
 | 顺序 | 文档 | 管辖范围 | 效力 |
 | --- | --- | --- | --- |
 | 1 | `Documents/WebsiteDesignDocument_v0.2.md` | 产品定位、功能范围、视觉规范、验收标准 | **最高** |
 | 2 | `AGENT_RULES.md`（本文件） | 工程实现、工作流程、目录结构、依赖管理 | **强制** |
-| 3 | `Design/DeepSeek_Technical_Research.md` | 技术原理与方案推演 | 参考（有约束力的是它的结论，不是它的例子） |
-| 4 | `Design/WorkBuddy_Design_Review.md` | 设计评审与建议依据 | 参考，**无约束力** |
-| 5 | `Documents/WebsiteDesignDocument.md`（v0.1） | — | **仅历史归档，禁止作为依据** |
+| 3 | `Design/Codex_Development_Roadmap.md` | 施工阶段划分、各 Phase 任务与验收门禁、Agent 分工 | **强制（施工顺序）**；产品范围仍以 v0.2 为准 |
+| 4 | `Design/DeepSeek_Technical_Research.md` | 技术原理与方案推演 | 参考（有约束力的是它的结论，不是它的例子） |
+| 5 | `Design/WorkBuddy_Design_Review.md` | 设计评审与建议依据 | 参考，**无约束力** |
+| 6 | `Documents/WebsiteDesignDocument.md`（v0.1） | — | **仅历史归档，禁止作为依据** |
 
 **领域分工原则**：
 
@@ -453,6 +454,7 @@
 | | `pinyin` | ✅ | 拼音首字母（如 `jz` 命中"进制转换"） |
 | | `order` | ✅ | 人工排序权重 |
 | **行为** | `template` | ✅ | 使用的界面形状 |
+| | `actions` | ⬜ | **可选。** 声明 2–4 个操作；**模板负责展示与派发**（按钮位置、禁用逻辑、空/错状态）；**未声明则保持原有单操作行为**。定义只声明"有哪些操作、每个算什么"（见 v0.2 §3.5、§5.3） |
 | | `run` | ✅ | **纯函数**，见 §4.4 |
 | | `emptyHint` | ✅ | 空输入提示文案 |
 | | `errorHint` | ✅ | 出错提示模板 |
@@ -494,8 +496,9 @@
 | `char-count` | 中英文混排、标点、换行分别如何计算，且界面要说明三个口径的差异 |
 | `base-convert` | 大数精度（不得因浮点溢出出错）、负数、非法字符 |
 | `base64` | **Unicode 正确处理**（中文、Emoji 是最常见的出错点） |
-| `json-format` | 解析失败必须给出**行号与原因**，不接受只说"格式错误" |
-| `markdown-preview` | **XSS 防护**（全站唯一的脚本注入风险点），必须过滤危险标签 |
+| `url-encode` | 中文、Emoji 与保留字符（`& = ? / #`）的编解码；**空格按 `%20` 处理、`+` 原样保留**的口径必须在测试中锁死；非法百分号序列（缺位、截断、非 UTF-8、孤立代理）必须给出可操作提示 |
+| `json-format` | 支持**格式化 / 压缩 / 校验**三种操作；解析失败必须给出**行号、列号与原因**，不接受只说"格式错误"；**格式化与压缩只改变空白，不得改写数字、字符串与转义写法**（超出 JavaScript 精确整数范围的整数必须逐字符保留） |
+| `markdown-preview`（**已移出第一版**，后续规划；要求保留，随工具排期） | **XSS 防护**（全站唯一的脚本注入风险点），必须过滤危险标签 |
 | `unit-convert` | 温度换算为特例（带偏移的线性变换，非简单乘法），必须有独立测试 |
 
 ### 4.5 界面模板规则
@@ -960,7 +963,7 @@ StudentTool/
 | 1 | **项目基础架构** | 工具注册表、分层结构、设计 token、布局骨架 |
 | 2 | **首页** | 顶栏 + 首屏（搜索 + 角色）+ 分类入口 + 常用工具 + 我的工具箱 |
 | 3 | **工具系统** | 动态路由、统一模板、单一数据源驱动 |
-| 4 | **6 个工具** | `unit-convert`、`char-count`、`base-convert`、`markdown-preview`、`json-format`、`base64` |
+| 4 | **6 个工具** | `char-count`、`unit-convert`、`base-convert`、`json-format`、`base64`、`url-encode`（`markdown-preview` **已移出第一版、保留为后续规划**，见 v0.2 §3.2） |
 | 5 | **收藏系统** | 收藏 + 最近使用 + 继续上次，本地存储无账号 |
 | 6 | 全局搜索 | 即时下拉，支持名称 / 标签 / 关键词 / 拼音首字母 |
 | 7 | 响应式 + 暗色模式 + 基础无障碍 | 跟随系统，无切换器 |
@@ -994,6 +997,8 @@ StudentTool/
 
 🟡 阶段之间存在依赖，**不得跳阶段**：
 
+> **编号说明**：本节 10 个阶段是工程视角的粗粒度划分；`Design/Codex_Development_Roadmap.md` 的 Phase 0–10 是其细化，**两套编号不一一对应**（例如本节的"工具系统内核"是 Roadmap 的 Phase 2）。执行顺序以 Roadmap 的 Phase 序号为准，"不得跳阶段"的依赖约束以本节为准。
+
 ```
 1. 工程规范（本文件）              ← 当前
       ↓
@@ -1005,7 +1010,7 @@ StudentTool/
       ↓
 5. 工具系统内核 ★ 最关键
       ↓
-6. 6 个工具的实现 + 测试
+6. 第一版余下工具的实现 + 测试（`markdown-preview` 已移出第一版）
       ↓
 7. 收藏系统（存储封装、版本管理、首页入口）
       ↓
@@ -1157,10 +1162,13 @@ StudentTool/
 | P0 | 单位换算 | `unit-convert` | `convert` |
 | P0 | 字数统计 | `char-count` | `text` |
 | P0 | 进制转换 | `base-convert` | `convert` |
-| P1 | Markdown 预览 | `markdown-preview` | `text` |
 | P1 | JSON 格式化 | `json-format` | `dev` |
 | P2 | Base64 转换 | `base64` | `dev` |
+| P2 | URL 编码解码 | `url-encode` | `dev` |
+| 后续规划 | Markdown 预览 | `markdown-preview` | `text`（v1 不实现） |
 | 暂缓 | Hash 计算 | 未定 | `dev`（v1 不实现） |
+
+> 上表为**第一版 6 个工具**的权威 id 清单（与 v0.2 §3.2 一致）：`char-count`、`unit-convert`、`base-convert`、`json-format`、`base64`、`url-encode`。`markdown-preview` 保留为后续规划，其 id 仍属公共接口，**不得占用或改名**。
 
 ### 分类 slug
 
@@ -1174,10 +1182,10 @@ StudentTool/
 
 | 形状 | 交互模式 | 适用工具 |
 | --- | --- | --- |
-| 文本变形 | 输入文本 → 按钮 → 输出文本 | `base64`、`json-format` |
+| 文本变形 | 输入文本 → 选操作（如已声明）→ 按钮 → 输出文本 | `base64`、`url-encode`（单操作）；`json-format`（多操作：格式化 / 压缩 / 校验） |
 | 数值换算 | 输入数值 + 选单位 → 输出 | `base-convert` |
 | 实时统计 | 边输入边统计，无转换按钮 | `char-count` |
-| 左右分栏预览 | 左编辑右实时渲染 | `markdown-preview` |
+| 左右分栏预览 | 左编辑右实时渲染 | `markdown-preview`（**后续规划，不在第一版**） |
 | 自定义 | 交互复杂 | `unit-convert` |
 
 ### 角色资产（4 个状态）
@@ -1196,7 +1204,7 @@ StudentTool/
 | **项目最终名称** | 品牌、域名、**存储键名前缀**、角色命名 |
 | 视觉 token 具体色值 | 全站观感与一致性 |
 | 主角色美术资产交付时间 | 阻塞首页与空状态 |
-| Markdown 渲染库选型与 XSS 过滤方案 | 安全性 |
+| Markdown 渲染库选型与 XSS 过滤方案 | 安全性。该工具**已移出第一版，不阻塞第一版交付**，排期时再定 |
 
 > 🔴 **存储键名前缀依赖项目最终名称，在名称确定前不得随意指定。** 若必须先实现，使用一个常量集中定义，便于后续统一替换。
 
@@ -1207,6 +1215,7 @@ StudentTool/
 | 版本 | 日期 | 变更内容 |
 | --- | --- | --- |
 | v1.0 | 2026-09-19 | 首次建立。确立 9 大章节规则体系、3 条不可违反红线、修改前/后报告模板、目录结构（`src/` 布局）、开发阶段顺序、11 项强制检查清单、规则豁免流程 |
+| v1.1 | 2026-09-22 | **同步已确定事实，不改变任何项目原则**：① §9.1 第一版工具范围改为 `char-count`、`unit-convert`、`base-convert`、`json-format`、`base64`、`url-encode`，`markdown-preview` 移出第一版、保留为后续规划；② 附录 A 工具 id 表补 `url-encode`，`markdown-preview` 改标"后续规划"（id 仍受保护）；③ §4.3 契约补可选字段 `actions`（2–4 个操作、模板展示与派发、未声明保持原行为）；④ §4.4 同步 `json-format` 的三操作 / 行号列号与原因 / 输出保真，补 `url-encode` 专项测试要求，`markdown-preview` 行标注后续规划；⑤ §0.3 效力表与表头依赖文档加入 `Design/Codex_Development_Roadmap.md`（共 6 份文档）；⑥ §9.3 补阶段编号与 Roadmap Phase 的映射说明，第 6 阶段措辞收紧；⑦ 附录 A 界面模板表补 `url-encode`、标注多操作与后续规划，待定项 Markdown 行补"不阻塞第一版"。**三条红线、模板总数 ≤5、纯函数、存储红线、角色边界、目录结构、id 不可变等原则条款一字未改** |
 
 ---
 

@@ -5,7 +5,7 @@ import type { ToolDefinition } from "@/types/tools";
 
 export type ToolCardData = Pick<
   ToolDefinition,
-  "id" | "name" | "description" | "category"
+  "id" | "name" | "description" | "category" | "summary"
 >;
 
 type ToolCardProps = {
@@ -27,7 +27,7 @@ export function ToolCard({ tool }: ToolCardProps) {
             {tool.name}
           </h2>
           <p className="mt-2 text-sm leading-6 text-muted-foreground">
-            {tool.description}
+            {tool.summary ?? tool.description}
           </p>
         </Card>
       </Link>
