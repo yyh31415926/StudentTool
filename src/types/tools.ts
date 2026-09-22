@@ -14,6 +14,11 @@ export type ToolAction = {
   label: string;
 };
 
+export type ToolFaq = {
+  question: string;
+  answer: string;
+};
+
 export type ToolDefinition = {
   id: string;
   name: string;
@@ -44,4 +49,5 @@ export type ToolDefinition = {
   emptyHint?: string;
   /** Optional fallback copy for errors thrown by run. */
   errorHint?: string;
+  seoFaq?: readonly ToolFaq[];
 };

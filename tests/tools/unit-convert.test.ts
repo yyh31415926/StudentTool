@@ -68,4 +68,10 @@ describe("unit-convert", () => {
       "不能在不同单位类型之间换算",
     );
   });
+
+  it("rejects conversions that overflow the representable range", () => {
+    expect(() => convertUnit(Number.MAX_VALUE, "km", "mm")).toThrow(
+      "换算结果超出可表示的范围",
+    );
+  });
 });

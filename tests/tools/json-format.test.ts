@@ -2,6 +2,7 @@ import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
 import { runJsonFormat } from "../../src/lib/tools/json-format";
+import { MAX_INPUT_LENGTH, MAX_NESTING_DEPTH } from "../../src/lib/tools/limits";
 import { getToolById } from "../../src/lib/tools/registry";
 
 const templateSource = readFileSync(
@@ -483,5 +484,35 @@ describe("json-format · 工具定义与模板约定", () => {
     expect(templateSource).not.toContain("json-format");
     expect(templateSource).not.toContain("base64");
     expect(templateSource).not.toContain("toolId ===");
+  });
+});
+
+describe("json-format · 运行时边界保护", () => {
+  it("拒绝超过嵌套深度上限的输入", () => {
+    const depth = MAX_NESTING_DEPTH + 1;
+    const deep = `${"[".repeat(depth)}1${"]".repeat(depth)}`;
+
+    expect(() => format(deep)).toThrow(/嵌套层级超过/);
+  });
+
+  it("拒绝超过输入长度上限的内容", () => {
+    expect(() => format("x".repeat(MAX_INPUT_LENGTH + 1))).toThrow(
+      /输入内容过长/,
+    );
+  });
+
+  it("拒绝格式化后体积过大的输出", () => {
+    // 深度 1000 + 5001 个元素：每个元素缩进约 2000 空格，输出远超上限。
+    const wide =
+      "[".repeat(MAX_NESTING_DEPTH) +
+      "1,".repeat(5000) +
+      "1" +
+      "]".repeat(MAX_NESTING_DEPTH);
+
+    expect(() => format(wide)).toThrow(/格式化结果过大/);
+  });
+
+  it("上限以内的正常输入仍能格式化", () => {
+    expect(format('{"a":1}')).toBe(lines("{", '  "a": 1', "}"));
   });
 });

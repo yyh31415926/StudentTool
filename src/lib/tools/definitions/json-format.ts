@@ -33,5 +33,9 @@ export const jsonFormatTool: ToolDefinition = {
   pinyin: "json",
   order: 5,
   emptyHint: "请输入需要处理的 JSON 文本。",
+  seoFaq: [
+    { question: "JSON 格式化支持哪些操作？", answer: "支持格式化、压缩和校验，并会在错误时提示行号、列号和原因。" },
+    { question: "JSON 格式化会改写数字或字符串吗？", answer: "不会，格式化和压缩只调整空白，数字、字符串和转义写法按原文保留。" },
+  ],
   run: runJsonFormat,
 };

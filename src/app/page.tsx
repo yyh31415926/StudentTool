@@ -1,6 +1,7 @@
+import { Hero } from "@/components/home/Hero";
+import type { SearchableTool } from "@/components/home/search-tools";
 import { FavoriteToolsSection } from "@/components/tools/FavoriteToolsSection";
 import { ToolCategoryBrowser } from "@/components/tools/ToolCategoryBrowser";
-import { Card } from "@/components/ui/Card";
 import { getAllTools } from "@/lib/tools/registry";
 
 export default function Home() {
@@ -11,21 +12,20 @@ export default function Home() {
     description,
     category,
   }));
+  const searchableTools: readonly SearchableTool[] = tools.map((tool) => ({
+    id: tool.id,
+    name: tool.name,
+    category: tool.category,
+    summary: tool.summary,
+    keywords: tool.keywords,
+    tags: tool.tags,
+    pinyin: tool.pinyin,
+  }));
 
   return (
     <div className="mx-auto flex w-full max-w-content flex-1 items-start px-page py-page-lg md:px-page-lg">
       <div className="w-full space-y-10">
-        <Card className="w-full">
-          <p className="text-sm font-medium text-muted-foreground">
-            学生数字工具工作台
-          </p>
-          <h1 className="mt-2 text-3xl font-semibold tracking-tight">
-            StudentTool
-          </h1>
-          <p className="mt-4 max-w-prose text-base text-muted-foreground">
-            打开就能用，用完不用管。选择一个工具开始处理手头的任务。
-          </p>
-        </Card>
+        <Hero tools={searchableTools} />
 
         <FavoriteToolsSection tools={toolSummaries} />
 

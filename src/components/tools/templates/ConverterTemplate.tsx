@@ -33,21 +33,34 @@ export function ConverterTemplate({
 
   const selectedGroup =
     unitGroups.find((group) => group.id === groupId) ?? initialGroup;
-  const result = useMemo(() => {
+  const conversion = useMemo(() => {
     if (!value.trim() || !selectedGroup || !fromUnitId || !toUnitId) {
-      return undefined;
+      return { result: undefined, error: undefined };
     }
 
     const numericValue = Number(value);
 
     if (!Number.isFinite(numericValue)) {
-      return undefined;
+      return { result: undefined, error: undefined };
     }
 
-    return convertUnit(numericValue, fromUnitId, toUnitId);
+    try {
+      return {
+        result: convertUnit(numericValue, fromUnitId, toUnitId),
+        error: undefined,
+      };
+    } catch (caughtError) {
+      return {
+        result: undefined,
+        error: caughtError instanceof Error ? caughtError.message : "无法换算。",
+      };
+    }
   }, [fromUnitId, selectedGroup, toUnitId, value]);
 
-  const hasInvalidInput = Boolean(value.trim()) && result === undefined;
+  const hasInvalidInput =
+    Boolean(value.trim()) &&
+    conversion.result === undefined &&
+    conversion.error === undefined;
 
   function handleGroupChange(nextGroupId: string) {
     const nextGroup = unitGroups.find((group) => group.id === nextGroupId);
@@ -99,7 +112,8 @@ export function ConverterTemplate({
             aria-live="polite"
             className="flex min-h-touch items-center rounded-control border border-border bg-surface-muted px-3 text-base tabular-nums"
           >
-            {hasInvalidInput ? "请输入有效数字" : result ?? "—"}
+            {conversion.error ??
+              (hasInvalidInput ? "请输入有效数字" : conversion.result ?? "—")}
           </div>
         </div>
       </div>

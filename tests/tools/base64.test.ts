@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { runBase64Transform } from "../../src/lib/tools/base64";
+import { MAX_INPUT_LENGTH } from "../../src/lib/tools/limits";
 
 describe("runBase64Transform", () => {
   it("encodes Chinese text", () => {
@@ -64,5 +65,11 @@ describe("runBase64Transform", () => {
 
   it("accepts Base64 with surrounding line breaks", () => {
     expect(runBase64Transform("5L2g\n5aW9")).toBe("你好");
+  });
+
+  it("rejects oversized input", () => {
+    expect(() => runBase64Transform("a".repeat(MAX_INPUT_LENGTH + 1))).toThrow(
+      "输入内容过长",
+    );
   });
 });

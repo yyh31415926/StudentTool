@@ -87,4 +87,27 @@ describe("favorites service", () => {
       "quota exceeded",
     );
   });
+
+  it("strictly validates schemaVersion on versioned data", () => {
+    const validIds = new Set(["char-count"]);
+
+    // 当前版本正常读取
+    expect(
+      parseFavorites('{"schemaVersion":1,"favorites":["char-count"]}', validIds),
+    ).toEqual(["char-count"]);
+
+    // 更新的版本：只读已知字段（向前兼容）
+    expect(
+      parseFavorites('{"schemaVersion":2,"favorites":["char-count"]}', validIds),
+    ).toEqual(["char-count"]);
+
+    // 缺少 schemaVersion / 类型不对 / 版本更旧：结构不可信，返回空列表
+    expect(parseFavorites('{"favorites":["char-count"]}', validIds)).toEqual([]);
+    expect(
+      parseFavorites('{"schemaVersion":"1","favorites":["char-count"]}', validIds),
+    ).toEqual([]);
+    expect(
+      parseFavorites('{"schemaVersion":0,"favorites":["char-count"]}', validIds),
+    ).toEqual([]);
+  });
 });

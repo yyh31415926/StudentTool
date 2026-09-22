@@ -15,6 +15,12 @@
  * 3. 重排结果必须能再次通过 JSON.parse（输出自检），否则不返回给用户。
  */
 
+import {
+  MAX_INPUT_LENGTH,
+  MAX_NESTING_DEPTH,
+  MAX_OUTPUT_LENGTH,
+} from "./limits";
+
 const INDENT_UNIT = "  ";
 const BOM = "\uFEFF";
 const MAX_FRAGMENT_LENGTH = 24;
@@ -281,6 +287,7 @@ function skipComment(source: string, start: number): number {
 function tokenize(source: string): Token[] {
   const tokens: Token[] = [];
   let index = 0;
+  let depth = 0;
 
   while (index < source.length) {
     const code = source.charCodeAt(index);
@@ -294,24 +301,42 @@ function tokenize(source: string): Token[] {
     const char = source[index];
 
     if (char === "{") {
+      depth += 1;
+      if (depth > MAX_NESTING_DEPTH) {
+        return fail(
+          `嵌套层级超过 ${MAX_NESTING_DEPTH} 层，无法处理。请简化结构后再运行。`,
+        );
+      }
       tokens.push({ kind: "lbrace", start, end: start + 1 });
       index += 1;
       continue;
     }
 
     if (char === "}") {
+      if (depth > 0) {
+        depth -= 1;
+      }
       tokens.push({ kind: "rbrace", start, end: start + 1 });
       index += 1;
       continue;
     }
 
     if (char === "[") {
+      depth += 1;
+      if (depth > MAX_NESTING_DEPTH) {
+        return fail(
+          `嵌套层级超过 ${MAX_NESTING_DEPTH} 层，无法处理。请简化结构后再运行。`,
+        );
+      }
       tokens.push({ kind: "lbracket", start, end: start + 1 });
       index += 1;
       continue;
     }
 
     if (char === "]") {
+      if (depth > 0) {
+        depth -= 1;
+      }
       tokens.push({ kind: "rbracket", start, end: start + 1 });
       index += 1;
       continue;
@@ -871,6 +896,18 @@ function buildMinified(context: DiagnosticContext): string {
 
 function buildFormatted(context: DiagnosticContext): string {
   const chunks: string[] = [];
+  let outputLength = 0;
+
+  function append(...parts: string[]): void {
+    for (const part of parts) {
+      outputLength += part.length;
+      if (outputLength > MAX_OUTPUT_LENGTH) {
+        return fail("格式化结果过大，请缩小输入或降低嵌套层级后再运行。");
+      }
+      chunks.push(part);
+    }
+  }
+
   /** 每一层容器是否还没有内容：用来决定 {} 与 [] 是否保持单行。 */
   const emptyFrames: boolean[] = [];
 
@@ -878,28 +915,28 @@ function buildFormatted(context: DiagnosticContext): string {
     const text = context.source.slice(token.start, token.end);
 
     if (token.kind === "comma") {
-      chunks.push(",", `\n${indent(emptyFrames.length)}`);
+      append(",", `\n${indent(emptyFrames.length)}`);
       continue;
     }
 
     if (token.kind === "colon") {
-      chunks.push(": ");
+      append(": ");
       continue;
     }
 
     if (token.kind === "rbrace" || token.kind === "rbracket") {
       const frameWasEmpty = emptyFrames.pop() ?? false;
-      chunks.push(frameWasEmpty ? text : `\n${indent(emptyFrames.length)}${text}`);
+      append(frameWasEmpty ? text : `\n${indent(emptyFrames.length)}${text}`);
       continue;
     }
 
     if (token.kind === "lbrace" || token.kind === "lbracket") {
       if (emptyFrames.length > 0 && emptyFrames[emptyFrames.length - 1]) {
         emptyFrames[emptyFrames.length - 1] = false;
-        chunks.push(`\n${indent(emptyFrames.length)}`);
+        append(`\n${indent(emptyFrames.length)}`);
       }
 
-      chunks.push(text);
+      append(text);
       emptyFrames.push(true);
       continue;
     }
@@ -911,15 +948,15 @@ function buildFormatted(context: DiagnosticContext): string {
     ) {
       if (emptyFrames.length > 0 && emptyFrames[emptyFrames.length - 1]) {
         emptyFrames[emptyFrames.length - 1] = false;
-        chunks.push(`\n${indent(emptyFrames.length)}`);
+        append(`\n${indent(emptyFrames.length)}`);
       }
 
-      chunks.push(text);
+      append(text);
       continue;
     }
 
     // 合法输入不会走到这里；万一 JSON.parse 接受了扫描器不认识的写法，原样保留。
-    chunks.push(text);
+    append(text);
   }
 
   return chunks.join("");
@@ -999,6 +1036,11 @@ function readInput(input: unknown): { text: string; action: JsonFormatAction } {
  */
 export function runJsonFormat(input: unknown): string {
   const { text, action } = readInput(input);
+
+  if (text.length > MAX_INPUT_LENGTH) {
+    throw new Error("输入内容过长，请分次处理或粘贴更短的内容。");
+  }
+
   const source = normalizeSource(text);
 
   if (!source.trim()) {

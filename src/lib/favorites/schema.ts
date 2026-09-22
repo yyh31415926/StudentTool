@@ -38,22 +38,40 @@ export function parseFavorites(
     return [];
   }
 
+  let parsed: unknown;
+
   try {
-    const parsed: unknown = JSON.parse(raw);
-
-    if (Array.isArray(parsed)) {
-      return sanitizeFavoriteIds(parsed, validToolIds);
-    }
-
-    if (
-      typeof parsed === "object" &&
-      parsed !== null &&
-      "favorites" in parsed &&
-      Array.isArray(parsed.favorites)
-    ) {
-      return sanitizeFavoriteIds(parsed.favorites, validToolIds);
-    }
+    parsed = JSON.parse(raw);
   } catch {
+    return [];
+  }
+
+  // 旧格式（v0，无版本号的纯数组）：迁移到当前格式，直接清洗。
+  if (Array.isArray(parsed)) {
+    return sanitizeFavoriteIds(parsed, validToolIds);
+  }
+
+  if (typeof parsed === "object" && parsed !== null) {
+    const record = parsed as Record<string, unknown>;
+
+    // 当前版本：正常读取。
+    if (record.schemaVersion === FAVORITES_SCHEMA_VERSION) {
+      return Array.isArray(record.favorites)
+        ? sanitizeFavoriteIds(record.favorites, validToolIds)
+        : [];
+    }
+
+    // 比当前代码更新的版本：只读已知字段，绝不把数据覆盖回旧版本。
+    if (
+      typeof record.schemaVersion === "number" &&
+      record.schemaVersion > FAVORITES_SCHEMA_VERSION
+    ) {
+      return Array.isArray(record.favorites)
+        ? sanitizeFavoriteIds(record.favorites, validToolIds)
+        : [];
+    }
+
+    // 缺少 schemaVersion、类型不对或版本号更旧：结构不可信，返回空列表。
     return [];
   }
 

@@ -39,7 +39,7 @@ export function FavoriteToolsSection({
           还没有收藏工具，可以在工具卡片上添加收藏。
         </Card>
       ) : (
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
           {favoriteTools.map((tool) => (
             <div className="relative" key={tool.id}>
               <Link

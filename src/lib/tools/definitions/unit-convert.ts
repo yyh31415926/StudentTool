@@ -15,6 +15,10 @@ export const unitConvertTool: ToolDefinition = {
   tip: "选择单位类型和单位，输入数值后结果实时更新；长度与质量各自独立换算。",
   emptyHint: "请输入需要换算的数值。",
   errorHint: "请输入有效数字，并在同一单位类型（长度或质量）内进行换算。",
+  seoFaq: [
+    { question: "单位换算支持哪些单位？", answer: "当前支持长度和质量单位的常用换算。" },
+    { question: "单位换算会上传输入内容吗？", answer: "不会，换算在当前浏览器中完成。" },
+  ],
   exampleInput: "100",
   run: runUnitConversion,
 };

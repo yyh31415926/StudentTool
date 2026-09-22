@@ -1,3 +1,5 @@
+import { MAX_INPUT_LENGTH } from "./limits";
+
 const BASE64_STANDARD_PATTERN = /^[A-Za-z0-9+/]*={0,2}$/;
 const BASE64_URL_SAFE_PATTERN = /^[A-Za-z0-9_-]*={0,2}$/;
 
@@ -90,6 +92,10 @@ function looksLikeMalformedBase64(input: string): boolean {
 export function runBase64Transform(input: unknown): string {
   if (typeof input !== "string") {
     throw new TypeError("Base64 转换只接受文本输入。请输入字符串后重试。");
+  }
+
+  if (input.length > MAX_INPUT_LENGTH) {
+    throw new Error("输入内容过长，请分次处理或粘贴更短的内容。");
   }
 
   if (!input.trim()) {

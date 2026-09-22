@@ -18,5 +18,9 @@ export const base64Tool: ToolDefinition = {
   emptyHint: "请输入需要编码或解码的文本。",
   errorHint:
     "无法转换。请确认输入是要编码的普通文字，或是标准 / URL-safe 的 Base64；检查字符与填充符号 =。",
+  seoFaq: [
+    { question: "Base64 转换支持中文和 Emoji 吗？", answer: "支持，工具使用 UTF-8 处理中文、日文、Emoji 和混合文本。" },
+    { question: "Base64 转换会上传内容吗？", answer: "不会，编码和解码都在当前浏览器中完成。" },
+  ],
   run: runBase64Transform,
 };

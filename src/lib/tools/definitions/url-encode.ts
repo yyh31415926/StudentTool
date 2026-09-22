@@ -25,6 +25,10 @@ export const urlEncodeTool: ToolDefinition = {
   emptyHint: "请输入需要编码或解码的内容。",
   errorHint:
     "无法处理。请确认百分号 % 后是两位十六进制，并检查内容是否完整、转义是否被截断。",
+  seoFaq: [
+    { question: "URL 编码解码支持中文吗？", answer: "支持，工具使用浏览器标准 URI 编码处理中文和 Emoji。" },
+    { question: "URL 编码解码会上传内容吗？", answer: "不会，转换在当前浏览器中完成。" },
+  ],
   order: 7,
   run: runUrlCodec,
 };

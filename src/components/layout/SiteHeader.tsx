@@ -24,6 +24,12 @@ export function SiteHeader() {
           >
             首页
           </Link>
+          <Link
+            className="inline-flex min-h-touch items-center rounded-control px-3 text-sm font-medium text-muted-foreground transition-colors hover:bg-surface-muted hover:text-foreground"
+            href="/my-toolbox"
+          >
+            我的工具箱
+          </Link>
         </nav>
       </div>
     </header>

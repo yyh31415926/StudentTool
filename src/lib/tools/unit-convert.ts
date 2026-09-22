@@ -70,7 +70,13 @@ export function convertUnit(
     throw new RangeError("不能在不同单位类型之间换算。");
   }
 
-  return (value * from.unit.factor) / to.unit.factor;
+  const result = (value * from.unit.factor) / to.unit.factor;
+
+  if (!Number.isFinite(result)) {
+    throw new RangeError("换算结果超出可表示的范围，请使用更小的数值。");
+  }
+
+  return result;
 }
 
 export function runUnitConversion(input: unknown): number {

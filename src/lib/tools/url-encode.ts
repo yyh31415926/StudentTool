@@ -72,6 +72,10 @@ export function runUrlCodec(input: unknown): string {
     throw new TypeError("URL 编码解码只接受文本输入。请输入字符串后重试。");
   }
 
+  if (input.length > MAX_INPUT_LENGTH) {
+    throw new Error("输入内容过长，请分次处理或粘贴更短的内容。");
+  }
+
   if (hasLoneSurrogate(input)) {
     throw new Error("输入包含不完整字符，请重新复制完整内容。");
   }
@@ -105,3 +109,4 @@ export function runUrlCodec(input: unknown): string {
     throw caughtError;
   }
 }
+import { MAX_INPUT_LENGTH } from "./limits";
