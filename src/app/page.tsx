@@ -1,5 +1,5 @@
 import { FavoriteToolsSection } from "@/components/tools/FavoriteToolsSection";
-import { ToolCard } from "@/components/tools/ToolCard";
+import { ToolCategoryBrowser } from "@/components/tools/ToolCategoryBrowser";
 import { Card } from "@/components/ui/Card";
 import { getAllTools } from "@/lib/tools/registry";
 
@@ -38,15 +38,11 @@ export default function Home() {
               全部工具
             </h2>
             <p className="mt-1 text-sm text-muted-foreground">
-              当前可用的学生数字工具。
+              当前可用的学生数字工具，可按分类浏览。
             </p>
           </div>
 
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {tools.map((tool) => (
-              <ToolCard key={tool.id} tool={tool} />
-            ))}
-          </div>
+          <ToolCategoryBrowser tools={toolSummaries} />
         </section>
       </div>
     </div>
