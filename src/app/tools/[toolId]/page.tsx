@@ -59,6 +59,13 @@ export default async function ToolPage({ params }: ToolPageProps) {
               errorHint: tool.errorHint,
             })
           : null}
+
+        {tool.tip ? (
+          <Card>
+            <h2 className="text-sm font-semibold">小技巧</h2>
+            <p className="mt-1 text-sm text-muted-foreground">{tool.tip}</p>
+          </Card>
+        ) : null}
       </div>
     </div>
   );

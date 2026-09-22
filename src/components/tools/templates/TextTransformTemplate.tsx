@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { getToolById } from "@/lib/tools/registry";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
@@ -12,6 +12,8 @@ type TextTransformTemplateProps = {
   emptyHint?: string;
   errorHint?: string;
 };
+
+type CopyState = "idle" | "copied" | "error";
 
 function formatOutput(value: unknown): string {
   if (typeof value === "string") {
@@ -38,7 +40,17 @@ export function TextTransformTemplate({
   const [input, setInput] = useState("");
   const [output, setOutput] = useState("");
   const [error, setError] = useState<string | undefined>();
+  const [copyState, setCopyState] = useState<CopyState>("idle");
   const tool = getToolById(toolId);
+
+  useEffect(() => {
+    if (copyState !== "copied") {
+      return;
+    }
+
+    const timer = window.setTimeout(() => setCopyState("idle"), 2000);
+    return () => window.clearTimeout(timer);
+  }, [copyState]);
 
   function runTransform() {
     if (!input.trim()) {
@@ -69,6 +81,20 @@ export function TextTransformTemplate({
     setInput("");
     setOutput("");
     setError(undefined);
+    setCopyState("idle");
+  }
+
+  async function copyOutput() {
+    if (!output) {
+      return;
+    }
+
+    try {
+      await navigator.clipboard.writeText(output);
+      setCopyState("copied");
+    } catch {
+      setCopyState("error");
+    }
   }
 
   return (
@@ -100,6 +126,12 @@ export function TextTransformTemplate({
         onKeyDown={(event) => {
           if (event.key === "Escape") {
             clearInput();
+            return;
+          }
+
+          if ((event.ctrlKey || event.metaKey) && event.key === "Enter") {
+            event.preventDefault();
+            runTransform();
           }
         }}
         placeholder="在这里输入或粘贴文本"
@@ -112,10 +144,32 @@ export function TextTransformTemplate({
       ) : null}
 
       <div>
-        <h2 className="text-xl font-semibold">输出结果</h2>
+        <div className="flex items-center justify-between gap-3">
+          <h2 className="text-xl font-semibold">输出结果</h2>
+          {output ? (
+            <Button
+              size="sm"
+              type="button"
+              variant="secondary"
+              onClick={copyOutput}
+            >
+              复制结果
+            </Button>
+          ) : null}
+        </div>
+        {copyState === "copied" ? (
+          <p className="mt-2 text-sm text-muted-foreground" role="status">
+            已复制到剪贴板。
+          </p>
+        ) : null}
+        {copyState === "error" ? (
+          <p className="mt-2 text-sm text-error" role="alert">
+            复制失败，请手动复制。
+          </p>
+        ) : null}
         <pre
           aria-live="polite"
-          className="mt-4 min-h-32 whitespace-pre-wrap break-words rounded-control bg-surface-muted p-4 text-sm"
+          className="mt-4 min-h-32 whitespace-pre-wrap break-words rounded-control bg-surface-muted p-4 font-mono text-sm"
         >
           {output || "—"}
         </pre>
