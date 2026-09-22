@@ -1,11 +1,8 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { BaseConverterTemplate } from "@/components/tools/templates/BaseConverterTemplate";
+import { createElement } from "react";
 import { Card } from "@/components/ui/Card";
-import { CounterTemplate } from "@/components/tools/templates/CounterTemplate";
-import { ConverterTemplate } from "@/components/tools/templates/ConverterTemplate";
-import { baseDefinitions } from "@/lib/tools/base-convert";
-import { unitConvertGroups } from "@/lib/tools/unit-convert";
+import { getTemplateComponent } from "@/components/tools/templates/registry";
 import { getAllTools, getToolById } from "@/lib/tools/registry";
 
 type ToolPageProps = {
@@ -40,6 +37,8 @@ export default async function ToolPage({ params }: ToolPageProps) {
     notFound();
   }
 
+  const Template = getTemplateComponent(tool.template);
+
   return (
     <div className="mx-auto flex w-full max-w-content flex-1 items-start px-page py-page-lg md:px-page-lg">
       <div className="w-full space-y-6">
@@ -52,13 +51,14 @@ export default async function ToolPage({ params }: ToolPageProps) {
             {tool.description}
           </p>
         </Card>
-        {tool.template === "counter" ? (
-          <CounterTemplate exampleInput={tool.exampleInput} />
-        ) : tool.template === "converter" ? (
-          <ConverterTemplate unitGroups={unitConvertGroups} />
-        ) : tool.template === "base-converter" ? (
-          <BaseConverterTemplate bases={baseDefinitions} />
-        ) : null}
+        {Template
+          ? createElement(Template, {
+              toolId: tool.id,
+              exampleInput: tool.exampleInput,
+              emptyHint: tool.emptyHint,
+              errorHint: tool.errorHint,
+            })
+          : null}
       </div>
     </div>
   );
