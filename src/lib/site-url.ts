@@ -11,10 +11,14 @@ export function getSiteUrl(): string {
   if (configuredUrl) {
     const url = new URL(configuredUrl);
 
-    if (
-      process.env.NODE_ENV === "production" &&
-      (url.hostname === "localhost" || url.hostname === "127.0.0.1")
-    ) {
+    const localHostnames = new Set([
+      "localhost",
+      "127.0.0.1",
+      "[::1]",
+      "0.0.0.0",
+    ]);
+
+    if (process.env.NODE_ENV === "production" && localHostnames.has(url.hostname)) {
       throw new Error(
         "NEXT_PUBLIC_SITE_URL must be a public URL in production.",
       );

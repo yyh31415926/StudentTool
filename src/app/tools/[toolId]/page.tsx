@@ -39,13 +39,13 @@ export async function generateMetadata({
       locale: "zh_CN",
       title: `${tool.name} | StudentTool`,
       description: tool.summary ?? tool.description,
-      images: [{ url: "/og-image.svg", width: 1200, height: 630, alt: "StudentTool 学生数字工具工作台" }],
+      images: [{ url: "/og-image.png", width: 1200, height: 630, alt: "StudentTool 学生数字工具工作台" }],
     },
     twitter: {
       card: "summary_large_image",
       title: `${tool.name} | StudentTool`,
       description: tool.summary ?? tool.description,
-      images: ["/og-image.svg"],
+      images: ["/og-image.png"],
     },
   };
 }
