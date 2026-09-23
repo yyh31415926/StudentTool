@@ -1,15 +1,15 @@
 import type { MetadataRoute } from "next";
 import { getAllCategories } from "@/lib/tools/categories";
+import { getSiteUrl } from "@/lib/site-url";
 import { getAllTools } from "@/lib/tools/registry";
 
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
-
 export default function sitemap(): MetadataRoute.Sitemap {
+  const siteUrl = getSiteUrl();
   const now = new Date();
 
   const entries: MetadataRoute.Sitemap = [
     {
-      url: SITE_URL,
+      url: siteUrl,
       lastModified: now,
       changeFrequency: "weekly",
       priority: 1,
@@ -18,7 +18,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
 
   for (const tool of getAllTools()) {
     entries.push({
-      url: `${SITE_URL}/tools/${tool.id}`,
+      url: `${siteUrl}/tools/${tool.id}`,
       lastModified: now,
       changeFrequency: "monthly",
       priority: 0.8,
@@ -27,7 +27,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
 
   for (const category of getAllCategories()) {
     entries.push({
-      url: `${SITE_URL}/categories/${category.slug}`,
+      url: `${siteUrl}/categories/${category.slug}`,
       lastModified: now,
       changeFrequency: "monthly",
       priority: 0.8,

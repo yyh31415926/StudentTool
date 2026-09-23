@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630" role="img" aria-labelledby="title desc">
+  <title id="title">StudentTool 学生数字工具工作台</title>
+  <desc id="desc">StudentTool 学生数字工具工作台分享图占位资源</desc>
+  <rect width="1200" height="630" fill="#0f172a"/>
+  <circle cx="1010" cy="110" r="220" fill="#1e293b"/>
+  <circle cx="1060" cy="80" r="86" fill="#38bdf8" opacity=".85"/>
+  <rect x="92" y="92" width="76" height="76" rx="20" fill="#f8fafc"/>
+  <path d="M111 111h38v10h-27v9h23v10h-23v9h28v10h-39z" fill="#0f172a"/>
+  <text x="92" y="285" fill="#f8fafc" font-family="Arial, sans-serif" font-size="72" font-weight="700">StudentTool</text>
+  <text x="96" y="360" fill="#cbd5e1" font-family="Arial, sans-serif" font-size="36">学生数字工具工作台</text>
+  <text x="96" y="468" fill="#94a3b8" font-family="Arial, sans-serif" font-size="26">转换 · 文本处理 · 开发辅助</text>
+</svg>

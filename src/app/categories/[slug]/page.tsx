@@ -31,6 +31,22 @@ export async function generateMetadata({
   return {
     title: `${category.name} | StudentTool`,
     description: category.description,
+    alternates: { canonical: `/categories/${category.slug}` },
+    openGraph: {
+      type: "website",
+      url: `/categories/${category.slug}`,
+      siteName: "StudentTool",
+      locale: "zh_CN",
+      title: `${category.name} | StudentTool`,
+      description: category.description,
+      images: [{ url: "/og-image.svg", width: 1200, height: 630, alt: "StudentTool 学生数字工具工作台" }],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: `${category.name} | StudentTool`,
+      description: category.description,
+      images: ["/og-image.svg"],
+    },
   };
 }
 

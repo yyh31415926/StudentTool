@@ -1,11 +1,32 @@
 import type { Metadata } from "next";
 import { SiteFooter } from "@/components/layout/SiteFooter";
 import { SiteHeader } from "@/components/layout/SiteHeader";
+import { getSiteUrl } from "@/lib/site-url";
 import "./globals.css";
+
+const siteUrl = getSiteUrl();
 
 export const metadata: Metadata = {
   title: "StudentTool",
   description: "学生数字工具工作台",
+  metadataBase: new URL(siteUrl),
+  alternates: { canonical: "/" },
+  icons: { icon: "/favicon.svg" },
+  openGraph: {
+    type: "website",
+    url: siteUrl,
+    siteName: "StudentTool",
+    locale: "zh_CN",
+    title: "StudentTool",
+    description: "学生数字工具工作台",
+    images: [{ url: "/og-image.svg", width: 1200, height: 630, alt: "StudentTool 学生数字工具工作台" }],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "StudentTool",
+    description: "学生数字工具工作台",
+    images: ["/og-image.svg"],
+  },
 };
 
 export default function RootLayout({

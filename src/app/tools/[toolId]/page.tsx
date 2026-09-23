@@ -6,6 +6,7 @@ import { ToolFavoriteButton } from "@/components/tools/ToolFavoriteButton";
 import { getTemplateComponent } from "@/components/tools/templates/registry";
 import { Card } from "@/components/ui/Card";
 import { getAllCategories } from "@/lib/tools/categories";
+import { getSiteUrl } from "@/lib/site-url";
 import { getAllTools, getToolById } from "@/lib/tools/registry";
 
 type ToolPageProps = {
@@ -30,6 +31,22 @@ export async function generateMetadata({
     title: `${tool.name} | StudentTool`,
     description: tool.summary ?? tool.description,
     keywords: tool.keywords ? [...tool.keywords] : undefined,
+    alternates: { canonical: `/tools/${tool.id}` },
+    openGraph: {
+      type: "website",
+      url: `${getSiteUrl()}/tools/${tool.id}`,
+      siteName: "StudentTool",
+      locale: "zh_CN",
+      title: `${tool.name} | StudentTool`,
+      description: tool.summary ?? tool.description,
+      images: [{ url: "/og-image.svg", width: 1200, height: 630, alt: "StudentTool 学生数字工具工作台" }],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: `${tool.name} | StudentTool`,
+      description: tool.summary ?? tool.description,
+      images: ["/og-image.svg"],
+    },
   };
 }
 
