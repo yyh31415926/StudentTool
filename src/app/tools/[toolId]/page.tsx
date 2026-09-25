@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { createElement } from "react";
 import { Breadcrumbs, type BreadcrumbItem } from "@/components/layout/Breadcrumbs";
 import { ToolFavoriteButton } from "@/components/tools/ToolFavoriteButton";
+import { getCustomToolComponent } from "@/components/tools/custom/registry";
 import { getTemplateComponent } from "@/components/tools/templates/registry";
 import { Card } from "@/components/ui/Card";
 import { getAllCategories } from "@/lib/tools/categories";
@@ -58,7 +59,12 @@ export default async function ToolPage({ params }: ToolPageProps) {
     notFound();
   }
 
-  const Template = getTemplateComponent(tool.template);
+  const CustomComponent = tool.customUI
+    ? getCustomToolComponent(tool.customUI)
+    : undefined;
+  const ToolComponent =
+    CustomComponent ??
+    (tool.template ? getTemplateComponent(tool.template) : undefined);
   const category = getAllCategories().find((item) => item.slug === tool.category);
 
   const breadcrumbItems: BreadcrumbItem[] = [
@@ -83,8 +89,8 @@ export default async function ToolPage({ params }: ToolPageProps) {
             {tool.description}
           </p>
         </Card>
-        {Template
-          ? createElement(Template, {
+        {ToolComponent
+          ? createElement(ToolComponent, {
               toolId: tool.id,
               exampleInput: tool.exampleInput,
               emptyHint: tool.emptyHint,

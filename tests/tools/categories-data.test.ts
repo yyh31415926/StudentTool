@@ -25,7 +25,7 @@ describe("registry-driven category data layer", () => {
     }
   });
 
-  it("assigns the six registered tools to the correct categories", () => {
+  it("assigns the seven registered tools to the correct categories", () => {
     const bySlug = new Map(
       getAllCategories().map((category) => [category.slug, category]),
     );
@@ -40,6 +40,7 @@ describe("registry-driven category data layer", () => {
     expect(bySlug.get("dev")?.tools.map((tool) => tool.id).sort()).toEqual([
       "base64",
       "json-format",
+      "qrcode",
       "url-encode",
     ]);
   });

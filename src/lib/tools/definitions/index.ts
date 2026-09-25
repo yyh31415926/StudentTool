@@ -3,6 +3,7 @@ import { baseConvertTool } from "./base-convert";
 import { base64Tool } from "./base64";
 import { charCountTool } from "./char-count";
 import { jsonFormatTool } from "./json-format";
+import { qrcodeTool } from "./qrcode";
 import { unitConvertTool } from "./unit-convert";
 import { urlEncodeTool } from "./url-encode";
 
@@ -13,4 +14,5 @@ export const toolDefinitions = [
   jsonFormatTool,
   base64Tool,
   urlEncodeTool,
+  qrcodeTool,
 ] satisfies readonly ToolDefinition[];

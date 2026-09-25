@@ -24,7 +24,18 @@ export type ToolDefinition = {
   name: string;
   category: ToolCategory;
   description: string;
-  template: string;
+  /**
+   * The interface shape this tool uses. Resolved through the template registry.
+   * Optional when `customUI` is provided: a tool with a unique interaction uses
+   * a dedicated custom component instead of one of the shared templates.
+   */
+  template?: string;
+  /**
+   * Optional key of a dedicated custom component (resolved through the custom
+   * registry). Used for tools whose interaction does not fit any shared
+   * template, without growing the template count past its cap.
+   */
+  customUI?: string;
   /**
    * Optional operations of a tool. When present, multi-action templates call
    * `run({ text, action })` instead of `run(text)`, where `action` is one of
