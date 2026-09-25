@@ -36,7 +36,7 @@
 
 ## 已定案标识符（禁止变更）
 
-- 工具 id：`unit-convert` `char-count` `base-convert` `markdown-preview` `json-format` `base64` `url-encode` `qrcode`
+- 工具 id：`unit-convert` `char-count` `base-convert` `markdown-preview` `json-format` `base64` `url-encode` `qrcode` `image-ocr`
 - 分类 slug：`convert`（转换工具）`text`（文本处理）`dev`（开发辅助）
 - 源码根目录：`src/`（app / components / lib / hooks / types / content）
 - 技术栈：Next.js（App Router）+ React + **TypeScript（强制）** + Tailwind CSS + LocalStorage
@@ -46,6 +46,7 @@
 - 通用工具复用 `src/components/tools/templates/`（**总数 ≤5**，红线）。`ToolDefinition.template` 已改为**可选**。
 - 交互独特、无法复用模板的工具走 **`customUI`**：`ToolDefinition.customUI` 指定 key，组件放 `src/components/tools/custom/`（`registry.tsx` 做映射）。工具页先查 customUI、再回退 template。
 - 二维码工具新增依赖：`qrcode`（编码）+ `jsqr`（解码，懒加载）。
+- 图片文字识别工具（`image-ocr`）走 `customUI`，依赖 `tesseract.js`（仅识别时动态 `import()` 懒加载，模型权重从 CDN 加载、图片不出浏览器）。
 
 ## 当前阶段
 

@@ -25,7 +25,7 @@ describe("registry-driven category data layer", () => {
     }
   });
 
-  it("assigns the seven registered tools to the correct categories", () => {
+  it("assigns the eight registered tools to the correct categories", () => {
     const bySlug = new Map(
       getAllCategories().map((category) => [category.slug, category]),
     );
@@ -34,8 +34,9 @@ describe("registry-driven category data layer", () => {
       "base-convert",
       "unit-convert",
     ]);
-    expect(bySlug.get("text")?.tools.map((tool) => tool.id)).toEqual([
+    expect(bySlug.get("text")?.tools.map((tool) => tool.id).sort()).toEqual([
       "char-count",
+      "image-ocr",
     ]);
     expect(bySlug.get("dev")?.tools.map((tool) => tool.id).sort()).toEqual([
       "base64",

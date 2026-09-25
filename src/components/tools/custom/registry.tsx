@@ -1,4 +1,5 @@
 import type { ComponentType } from "react";
+import { ImageOcrTool } from "./image-ocr/ImageOcrTool";
 import { QRCodeTool } from "./qrcode/QRCodeTool";
 
 /**
@@ -21,6 +22,7 @@ export const customToolRegistry: Readonly<
   Partial<Record<string, ToolCustomComponent>>
 > = {
   qrcode: QRCodeTool,
+  "image-ocr": ImageOcrTool,
 };
 
 export function getCustomToolComponent(

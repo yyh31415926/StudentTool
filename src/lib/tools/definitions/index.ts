@@ -2,6 +2,7 @@ import type { ToolDefinition } from "@/types/tools";
 import { baseConvertTool } from "./base-convert";
 import { base64Tool } from "./base64";
 import { charCountTool } from "./char-count";
+import { imageOcrTool } from "./image-ocr";
 import { jsonFormatTool } from "./json-format";
 import { qrcodeTool } from "./qrcode";
 import { unitConvertTool } from "./unit-convert";
@@ -15,4 +16,5 @@ export const toolDefinitions = [
   base64Tool,
   urlEncodeTool,
   qrcodeTool,
+  imageOcrTool,
 ] satisfies readonly ToolDefinition[];
