@@ -10,6 +10,8 @@
   --st-color-primary-foreground: #ffffff;
   --st-color-muted-foreground: #536176;
   --st-color-focus: #4f46e5;
+  --st-color-error: #dc2626;
+  --st-color-warning: #b45309;
   --st-font-sans: "Inter", "Noto Sans SC", "Microsoft YaHei", sans-serif;
   --st-spacing-page: 1rem;
   --st-spacing-page-lg: 2rem;
@@ -33,6 +35,8 @@
   --color-primary-foreground: var(--st-color-primary-foreground);
   --color-muted-foreground: var(--st-color-muted-foreground);
   --color-focus: var(--st-color-focus);
+  --color-error: var(--st-color-error);
+  --color-warning: var(--st-color-warning);
   --font-sans: var(--st-font-sans);
   --spacing-page: var(--st-spacing-page);
   --spacing-page-lg: var(--st-spacing-page-lg);
@@ -55,6 +59,8 @@
     --st-color-primary-foreground: #101827;
     --st-color-muted-foreground: #a9b6c9;
     --st-color-focus: #a5b4fc;
+    --st-color-error: #f87171;
+    --st-color-warning: #fbbf24;
     --st-shadow-card: 0 0.5rem 1.5rem rgb(0 0 0 / 24%);
   }
 }

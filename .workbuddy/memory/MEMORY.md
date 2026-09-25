@@ -47,6 +47,7 @@
 - 交互独特、无法复用模板的工具走 **`customUI`**：`ToolDefinition.customUI` 指定 key，组件放 `src/components/tools/custom/`（`registry.tsx` 做映射）。工具页先查 customUI、再回退 template。
 - 二维码工具新增依赖：`qrcode`（编码）+ `jsqr`（解码，懒加载）。
 - 图片文字识别工具（`image-ocr`）走 `customUI`，依赖 `tesseract.js`（仅识别时动态 `import()` 懒加载，模型权重从 CDN 加载、图片不出浏览器）。
+- **图片文字识别已增加「DeepSeek 识别」模式（项目首个服务端 API 路由，突破「纯前端」）**：默认本地识别，用户主动切换才上传。服务端 `src/lib/ocr/deepseek.ts` + `src/app/api/ocr/deepseek/route.ts`（`GET` 状态 + `POST` OCR），模型 `deepseek-flash`，端点 `https://api.deepseek.com/chat/completions`。`DEEPSEEK_API_KEY` 仅服务端读取（`process.env["DEEPSEEK_API_KEY"]`，绝不用 `NEXT_PUBLIC_`、绝进前端），配置于 `.env.local`（已 gitignore），模板见 `.env.example`。
 
 ## 当前阶段
 
