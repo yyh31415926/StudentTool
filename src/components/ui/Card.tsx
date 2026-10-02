@@ -4,7 +4,7 @@ export type CardProps = HTMLAttributes<HTMLDivElement>;
 
 export function Card({ className = "", ...props }: CardProps) {
   const classes = [
-    "rounded-card border border-border bg-surface p-page-lg shadow-card",
+    "rounded-card border border-border bg-surface p-page md:p-page-lg shadow-card",
     className,
   ]
     .filter(Boolean)

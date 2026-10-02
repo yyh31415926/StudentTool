@@ -1,70 +1,24 @@
 "use client";
-
 import Link from "next/link";
-import { Card } from "@/components/ui/Card";
-import { ToolFavoriteButton } from "@/components/tools/ToolFavoriteButton";
 import { useFavorites } from "@/hooks/useFavorites";
-import type { ToolCardData } from "@/components/tools/ToolCard";
+import { useRecentTools } from "@/hooks/useRecentTools";
+import { ToolCard, type ToolCardData } from "./ToolCard";
 
-type FavoriteToolsSectionProps = {
-  tools: readonly ToolCardData[];
-};
-
-export function FavoriteToolsSection({
-  tools,
-}: FavoriteToolsSectionProps) {
+export function FavoriteToolsSection({ tools, full = false }: { tools: readonly ToolCardData[]; full?: boolean }) {
   const { favoriteIds, isLoaded } = useFavorites();
-  const favoriteTools = favoriteIds
-    .map((toolId) => tools.find((tool) => tool.id === toolId))
-    .filter((tool): tool is ToolCardData => tool !== undefined);
-
-  return (
-    <section aria-labelledby="favorite-tools-heading">
-      <div className="mb-4">
-        <h2
-          className="text-2xl font-semibold tracking-tight"
-          id="favorite-tools-heading"
-        >
-          我的常用工具
-        </h2>
-        <p className="mt-1 text-sm text-muted-foreground">
-          收藏的工具会保存在当前浏览器中。
-        </p>
-      </div>
-
-      {!isLoaded ? (
-        <Card className="text-sm text-muted-foreground">正在读取收藏…</Card>
-      ) : favoriteTools.length === 0 ? (
-        <Card className="text-sm text-muted-foreground">
-          还没有收藏工具，可以在工具卡片上添加收藏。
-        </Card>
-      ) : (
-        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
-          {favoriteTools.map((tool) => (
-            <div className="relative" key={tool.id}>
-              <Link
-                className="block rounded-card focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus"
-                href={`/tools/${tool.id}`}
-              >
-                <Card className="flex h-full flex-col pr-28 transition-colors hover:border-focus">
-                  <span className="w-fit rounded-control bg-surface-muted px-2 py-1 text-xs font-medium text-muted-foreground">
-                    {tool.category}
-                  </span>
-                  <h3 className="mt-4 text-xl font-semibold tracking-tight">
-                    {tool.name}
-                  </h3>
-                  <p className="mt-2 text-sm leading-6 text-muted-foreground">
-                    {tool.description}
-                  </p>
-                </Card>
-              </Link>
-              <div className="absolute right-4 top-4">
-                <ToolFavoriteButton toolId={tool.id} />
-              </div>
-            </div>
-          ))}
-        </div>
-      )}
-    </section>
-  );
+  const { recent, isLoaded: recentLoaded } = useRecentTools();
+  const favorites = favoriteIds.map((id) => tools.find((tool) => tool.id === id)).filter((tool): tool is ToolCardData => Boolean(tool));
+  const recentTools = recent.map(({ id }) => tools.find((tool) => tool.id === id)).filter((tool): tool is ToolCardData => Boolean(tool));
+  const last = recentTools[0];
+  return <section className={full ? "space-y-6" : "toolbox-preview"} aria-labelledby="favorite-tools-heading">
+    <div className="section-heading"><h2 id="favorite-tools-heading" className="text-xl font-semibold">{full ? "你的工具" : "我的工具箱"}</h2>{!full && <Link href="/my-toolbox" className="nav-link">查看全部 ↗</Link>}</div>
+    {!isLoaded || !recentLoaded ? <div role="status" aria-label="正在读取工具箱" className="skeleton" /> : <>
+      {last && <Link href={`/tools/${last.id}`} className="continue-tool"><span><span className="text-sm">继续上次</span><strong className="ml-3">{last.name}</strong></span><span aria-hidden="true">→</span></Link>}
+      {favorites.length === 0 && recentTools.length === 0 ? <div className="toolbox-empty"><span aria-hidden="true" className="tool-icon">☆</span><div><p className="font-medium">把顺手的工具，放在这里。</p><p className="mt-1 text-sm text-muted-foreground">点击工具卡片上的星标，即可收藏。数据保存在本机浏览器。</p></div></div> : <>
+        <div><h3 className="mb-3 font-medium">收藏工具</h3>{favorites.length ? <div className={full ? "tool-grid" : "flex flex-wrap gap-2"}>{(full ? favorites : favorites.slice(0, 4)).map((tool) => full ? <ToolCard key={tool.id} tool={tool} /> : <Link className="quick-tool" key={tool.id} href={`/tools/${tool.id}`}>{tool.name}</Link>)}</div> : <p className="text-sm text-muted-foreground">还没有收藏工具，点击工具卡片上的星标添加。</p>}</div>
+        {recentTools.length > 0 && <div className="mt-5"><h3 className="mb-3 font-medium">最近使用</h3><div className="flex flex-wrap gap-2">{(full ? recentTools : recentTools.slice(0, 4)).map((tool) => <Link className="quick-tool" key={tool.id} href={`/tools/${tool.id}`}>{tool.name}</Link>)}</div></div>}
+        <p className="mt-4 text-sm text-muted-foreground">数据保存在本机浏览器，仅记录工具，不保存输入内容与结果。</p>
+      </>}
+    </>}
+  </section>;
 }

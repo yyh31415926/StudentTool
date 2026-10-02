@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { useToolUsage } from "../../ToolUsageBoundary";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { Select } from "@/components/ui/Select";
@@ -81,6 +82,7 @@ export function ImageOcrTool({ emptyHint, errorHint }: ImageOcrToolProps) {
   const [result, setResult] = useState("");
   const [localStatus, setLocalStatus] = useState<LocalStatus>("idle");
   const [deepseekStatus, setDeepseekStatus] = useState<DeepSeekStatus>("idle");
+  useToolUsage(localStatus === "done" || deepseekStatus === "success");
   const [error, setError] = useState<string | undefined>();
   const [progress, setProgress] = useState(0);
   const [isDragging, setIsDragging] = useState(false);

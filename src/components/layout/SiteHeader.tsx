@@ -1,37 +1,16 @@
 import Link from "next/link";
-
+import { ToolSearch } from "@/components/home/ToolSearch";
+import { getAllTools } from "@/lib/tools/registry";
 export function SiteHeader() {
-  return (
-    <header className="border-b border-border bg-surface">
-      <div className="mx-auto flex min-h-header w-full max-w-content items-center justify-between gap-4 px-page md:px-page-lg">
-        <Link
-          className="inline-flex min-h-touch items-center gap-3 rounded-control px-2 text-base font-semibold tracking-tight transition-colors hover:bg-surface-muted"
-          href="/"
-        >
-          <span
-            aria-hidden="true"
-            className="grid size-8 shrink-0 place-items-center rounded-control bg-primary text-sm font-bold text-primary-foreground"
-          >
-            S
-          </span>
-          <span>StudentTool</span>
-        </Link>
-
-        <nav aria-label="主导航" className="flex items-center">
-          <Link
-            className="inline-flex min-h-touch items-center rounded-control px-3 text-sm font-medium text-muted-foreground transition-colors hover:bg-surface-muted hover:text-foreground"
-            href="/"
-          >
-            首页
-          </Link>
-          <Link
-            className="inline-flex min-h-touch items-center rounded-control px-3 text-sm font-medium text-muted-foreground transition-colors hover:bg-surface-muted hover:text-foreground"
-            href="/my-toolbox"
-          >
-            我的工具箱
-          </Link>
-        </nav>
-      </div>
-    </header>
-  );
+  const tools = getAllTools().map(({ id, name, category, summary, keywords, tags, pinyin }) => ({ id, name, category, summary, keywords, tags, pinyin }));
+  return <header className="site-header border-b border-border bg-surface">
+    <div className="header-inner mx-auto w-full max-w-content px-page md:px-page-lg">
+      <Link className="brand-link" href="/"><span aria-hidden="true" className="brand-mark">S<span /></span><span>StudentTool</span></Link>
+      <div className="header-search"><ToolSearch tools={tools} /></div>
+      <nav aria-label="主导航" className="flex items-center gap-1">
+        <Link className="nav-link" href="/my-toolbox">我的工具箱</Link>
+        <a className="nav-link desktop-nav" href="https://github.com/yyh31415926/StudentTool" target="_blank" rel="noreferrer">开源 ↗</a>
+      </nav>
+    </div>
+  </header>;
 }

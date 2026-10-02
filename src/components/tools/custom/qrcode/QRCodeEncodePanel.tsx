@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { useToolUsage } from "../../ToolUsageBoundary";
 import { Button } from "@/components/ui/Button";
 import { Textarea } from "@/components/ui/Textarea";
 import {
@@ -57,6 +58,7 @@ export function QRCodeEncodePanel({
       };
     }
   }, [text, options, hasContent]);
+  useToolUsage(Boolean(svg));
 
   const previewUrl = useMemo(
     () => (svg ? `data:image/svg+xml;utf8,${encodeURIComponent(svg)}` : ""),

@@ -1,7 +1,10 @@
 import type { ToolCategory, ToolDefinition } from "@/types/tools";
 import { toolDefinitions } from "./definitions";
 
-const toolRegistry: readonly ToolDefinition[] = toolDefinitions;
+// Keep all discovery surfaces in the same editorial order from definitions.
+const toolRegistry: readonly ToolDefinition[] = [...toolDefinitions].sort(
+  (a, b) => (a.order ?? Number.MAX_SAFE_INTEGER) - (b.order ?? Number.MAX_SAFE_INTEGER),
+);
 
 export function getAllTools(): readonly ToolDefinition[] {
   return toolRegistry;

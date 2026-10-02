@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useToolUsage } from "../ToolUsageBoundary";
 import type { ToolAction } from "@/types/tools";
 import { getToolById } from "@/lib/tools/registry";
 import { Button } from "@/components/ui/Button";
@@ -40,6 +41,7 @@ export function TextTransformTemplate({
 }: TextTransformTemplateProps) {
   const [input, setInput] = useState("");
   const [output, setOutput] = useState("");
+  useToolUsage(output.length > 0);
   const [error, setError] = useState<string | undefined>();
   const [copyState, setCopyState] = useState<CopyState>("idle");
   const tool = getToolById(toolId);

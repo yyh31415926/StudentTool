@@ -1,39 +1,18 @@
-import { ToolFavoriteButton } from "@/components/tools/ToolFavoriteButton";
 import Link from "next/link";
-import { Card } from "@/components/ui/Card";
+import { ToolFavoriteButton } from "./ToolFavoriteButton";
+import { ToolIcon } from "@/components/ui/ToolIcon";
+import { CATEGORY_OPTIONS } from "@/lib/tools/categories";
 import type { ToolDefinition } from "@/types/tools";
-
-export type ToolCardData = Pick<
-  ToolDefinition,
-  "id" | "name" | "description" | "category" | "summary"
->;
-
-type ToolCardProps = {
-  tool: ToolCardData;
-};
-
-export function ToolCard({ tool }: ToolCardProps) {
-  return (
-    <div className="relative">
-      <Link
-        className="block rounded-card focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus"
-        href={`/tools/${tool.id}`}
-      >
-        <Card className="flex h-full flex-col pr-28 transition-colors hover:border-focus">
-          <span className="w-fit rounded-control bg-surface-muted px-2 py-1 text-xs font-medium text-muted-foreground">
-            {tool.category}
-          </span>
-          <h2 className="mt-4 text-xl font-semibold tracking-tight">
-            {tool.name}
-          </h2>
-          <p className="mt-2 text-sm leading-6 text-muted-foreground">
-            {tool.summary ?? tool.description}
-          </p>
-        </Card>
-      </Link>
-      <div className="absolute right-4 top-4">
-        <ToolFavoriteButton toolId={tool.id} />
-      </div>
-    </div>
-  );
+export type ToolCardData = Pick<ToolDefinition, "id" | "name" | "description" | "category" | "summary">;
+export function ToolCard({ tool }: { tool: ToolCardData }) {
+  const category = CATEGORY_OPTIONS.find((item) => item.slug === tool.category);
+  return <article className="tool-card">
+    <Link className="tool-card-link" href={`/tools/${tool.id}`}>
+      <ToolIcon category={tool.category} />
+      <h3 className="mt-4 font-semibold text-xl">{tool.name}</h3>
+      <p className="mt-2 text-muted-foreground tool-summary">{tool.summary ?? tool.description}</p>
+      <span className="mt-4 flex items-center justify-between text-sm text-muted-foreground"><span>{category?.name}</span><span aria-hidden="true">↗</span></span>
+    </Link>
+    <div className="absolute right-3 top-3"><ToolFavoriteButton toolId={tool.id} compact /></div>
+  </article>;
 }

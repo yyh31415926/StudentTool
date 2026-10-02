@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { useToolUsage } from "../../ToolUsageBoundary";
 import { Button } from "@/components/ui/Button";
 import {
   resolveImageType,
@@ -74,6 +75,7 @@ async function decodeQrFromImage(
 export function QRCodeDecodePanel() {
   const [imageUrl, setImageUrl] = useState<string | null>(null);
   const [result, setResult] = useState("");
+  useToolUsage(Boolean(result));
   const [status, setStatus] = useState<DecodeStatus>("idle");
   const [error, setError] = useState<string | undefined>();
   const [isDragging, setIsDragging] = useState(false);

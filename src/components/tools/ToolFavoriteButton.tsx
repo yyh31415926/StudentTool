@@ -5,9 +5,10 @@ import { useFavorites } from "@/hooks/useFavorites";
 
 type ToolFavoriteButtonProps = {
   toolId: string;
+  compact?: boolean;
 };
 
-export function ToolFavoriteButton({ toolId }: ToolFavoriteButtonProps) {
+export function ToolFavoriteButton({ toolId, compact = false }: ToolFavoriteButtonProps) {
   const { error, isFavorite, isLoaded, toggleFavorite } = useFavorites();
   const active = isFavorite(toolId);
 
@@ -20,17 +21,18 @@ export function ToolFavoriteButton({ toolId }: ToolFavoriteButtonProps) {
         size="sm"
         type="button"
         variant={active ? "primary" : "secondary"}
+        className={compact ? "favorite-compact" : undefined}
         onClick={(event) => {
           event.preventDefault();
           event.stopPropagation();
           toggleFavorite(toolId);
         }}
       >
-        {active ? "已收藏" : "收藏"}
+        {compact ? <span aria-hidden="true">{active ? "★" : "☆"}</span> : active ? "已收藏" : "收藏"}
       </Button>
       {error ? (
         <span
-          className="max-w-40 text-right text-xs text-red-700 dark:text-red-300"
+          className="max-w-40 rounded-control bg-surface p-1 text-right text-sm text-error"
           role="alert"
         >
           {error}

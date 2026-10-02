@@ -24,7 +24,7 @@ export function useFavorites() {
     const initialRead = window.setTimeout(refresh, 0);
 
     const handleStorageChange = (event: StorageEvent) => {
-      if (event.key === FAVORITES_STORAGE_KEY) {
+      if (event.key === FAVORITES_STORAGE_KEY || event.key === null) {
         refresh();
       }
     };

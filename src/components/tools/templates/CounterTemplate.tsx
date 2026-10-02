@@ -1,9 +1,11 @@
 "use client";
 
 import { useState } from "react";
+import { useToolUsage } from "../ToolUsageBoundary";
 import { countCharacters } from "@/lib/tools/char-count";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
+import { CopyButton } from "@/components/ui/CopyButton";
 import { Textarea } from "@/components/ui/Textarea";
 
 type CounterTemplateProps = {
@@ -15,6 +17,7 @@ export function CounterTemplate({
 }: CounterTemplateProps) {
   const [value, setValue] = useState("");
   const result = countCharacters(value);
+  useToolUsage(value.length > 0);
 
   return (
     <Card className="space-y-6">
@@ -25,7 +28,7 @@ export function CounterTemplate({
             输入内容后，统计结果会实时更新。
           </p>
         </div>
-        <Button
+        <div className="flex gap-2"><Button
           size="sm"
           type="button"
           variant="secondary"
@@ -33,6 +36,7 @@ export function CounterTemplate({
         >
           试试示例
         </Button>
+        <Button size="sm" variant="secondary" onClick={() => setValue("")}>清空</Button></div>
       </div>
 
       <Textarea
@@ -87,6 +91,7 @@ export function CounterTemplate({
         <p>中文字符数只统计汉字；英文单词按连续英文字母统计。</p>
         <p>行数按换行符计算，空字符串为 0 行，空行计入行数。</p>
       </div>
+      <CopyButton text={value ? `字符数：${result.characterCount}\n中文字符数：${result.chineseCharacterCount}\n英文单词数：${result.englishWordCount}\n行数：${result.lineCount}` : ""} />
     </Card>
   );
 }

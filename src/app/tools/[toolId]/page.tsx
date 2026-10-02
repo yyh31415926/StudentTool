@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { createElement } from "react";
 import { Breadcrumbs, type BreadcrumbItem } from "@/components/layout/Breadcrumbs";
 import { ToolFavoriteButton } from "@/components/tools/ToolFavoriteButton";
+import { ToolUsageBoundary } from "@/components/tools/ToolUsageBoundary";
 import { getCustomToolComponent } from "@/components/tools/custom/registry";
 import { getTemplateComponent } from "@/components/tools/templates/registry";
 import { Card } from "@/components/ui/Card";
@@ -76,27 +77,27 @@ export default async function ToolPage({ params }: ToolPageProps) {
   ];
 
   return (
-    <div className="mx-auto flex w-full max-w-content flex-1 items-start px-page py-page-lg md:px-page-lg">
+    <div className="tool-page mx-auto flex w-full flex-1 items-start px-page py-page-lg md:px-page-lg">
       <div className="w-full space-y-6">
         <Breadcrumbs items={breadcrumbItems} />
 
-        <Card className="w-full">
-          <p className="text-sm font-medium text-muted-foreground">工具</p>
+        <div className="page-intro">
+          <p className="text-sm font-medium text-primary">{category?.name}</p>
           <h1 className="mt-2 text-3xl font-semibold tracking-tight">
             {tool.name}
           </h1>
           <p className="mt-4 max-w-prose text-base text-muted-foreground">
-            {tool.description}
+            {tool.summary ?? tool.description}
           </p>
-        </Card>
-        {ToolComponent
+        </div>
+        <ToolUsageBoundary key={tool.id} toolId={tool.id}>{ToolComponent
           ? createElement(ToolComponent, {
               toolId: tool.id,
               exampleInput: tool.exampleInput,
               emptyHint: tool.emptyHint,
               errorHint: tool.errorHint,
             })
-          : null}
+          : null}</ToolUsageBoundary>
 
         <div className="flex justify-end">
           <ToolFavoriteButton toolId={tool.id} />
@@ -107,6 +108,13 @@ export default async function ToolPage({ params }: ToolPageProps) {
             <h2 className="text-sm font-semibold">小技巧</h2>
             <p className="mt-1 text-sm text-muted-foreground">{tool.tip}</p>
           </Card>
+        ) : null}
+
+        {tool.summary && tool.description !== tool.summary ? (
+          <section className="border-t border-border pt-6" aria-labelledby="tool-about-heading">
+            <h2 id="tool-about-heading" className="font-semibold">关于这个工具</h2>
+            <p className="mt-2 leading-7 text-muted-foreground">{tool.description}</p>
+          </section>
         ) : null}
 
         {tool.seoFaq && tool.seoFaq.length > 0 ? (

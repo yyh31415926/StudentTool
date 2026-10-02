@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { FavoriteToolsList } from "@/components/tools/FavoriteToolsList";
 import type { ToolCardData } from "@/components/tools/ToolCard";
-import { Card } from "@/components/ui/Card";
+import { Breadcrumbs } from "@/components/layout/Breadcrumbs";
 import { getAllTools } from "@/lib/tools/registry";
 
 export function generateMetadata(): Metadata {
@@ -40,15 +40,16 @@ export default function MyToolboxPage() {
   return (
     <div className="mx-auto flex w-full max-w-content flex-1 items-start px-page py-page-lg md:px-page-lg">
       <div className="w-full space-y-10">
-        <Card className="w-full">
+        <Breadcrumbs items={[{ label: "首页", href: "/" }, { label: "我的工具箱" }]} />
+        <div className="page-intro">
           <p className="text-sm font-medium text-muted-foreground">工具箱</p>
           <h1 className="mt-2 text-3xl font-semibold tracking-tight">
             我的工具箱
           </h1>
           <p className="mt-4 max-w-prose text-base text-muted-foreground">
-            收藏的工具会保存在当前浏览器中。
+            收藏、最近使用与继续上次。数据保存在本机浏览器。
           </p>
-        </Card>
+        </div>
 
         <FavoriteToolsList tools={toolData} />
       </div>

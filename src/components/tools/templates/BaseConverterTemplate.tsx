@@ -1,7 +1,10 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { useToolUsage } from "../ToolUsageBoundary";
 import { Card } from "@/components/ui/Card";
+import { Button } from "@/components/ui/Button";
+import { CopyButton } from "@/components/ui/CopyButton";
 import { Input } from "@/components/ui/Input";
 import { Select } from "@/components/ui/Select";
 import {
@@ -39,6 +42,7 @@ export function BaseConverterTemplate({
       };
     }
   }, [inputBaseId, value]);
+  useToolUsage(conversion.results !== undefined);
 
   return (
     <Card className="space-y-6">
@@ -49,6 +53,10 @@ export function BaseConverterTemplate({
         </p>
       </div>
 
+      <div className="flex flex-wrap gap-2">
+        <Button size="sm" variant="secondary" onClick={() => { setInputBaseId("binary"); setValue("1010"); }}>试试示例</Button>
+        <Button size="sm" variant="secondary" onClick={() => setValue("")}>清空</Button>
+      </div>
       <div className="grid gap-4 md:grid-cols-[minmax(0,1fr)_14rem]">
         <label className="space-y-2 text-sm font-medium">
           <span>数字</span>
@@ -105,6 +113,7 @@ export function BaseConverterTemplate({
       <p className="border-t border-border pt-4 text-sm leading-6 text-muted-foreground">
         支持整数、正负号、前导零，以及十六进制的 0x / 0X 前缀；暂不支持小数。
       </p>
+      <CopyButton text={conversion.results ? bases.map((base) => `${base.name}：${conversion.results?.[base.id]}`).join("\n") : ""} />
     </Card>
   );
 }

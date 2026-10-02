@@ -7,7 +7,7 @@ const pageSource = readFileSync(
   "utf8",
 );
 const listSource = readFileSync(
-  join(process.cwd(), "src", "components", "tools", "FavoriteToolsList.tsx"),
+  join(process.cwd(), "src", "components", "tools", "FavoriteToolsSection.tsx"),
   "utf8",
 );
 

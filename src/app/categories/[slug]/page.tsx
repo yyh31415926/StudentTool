@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { ToolCard } from "@/components/tools/ToolCard";
-import { Card } from "@/components/ui/Card";
+import { Breadcrumbs } from "@/components/layout/Breadcrumbs";
 import { getAllCategories, getToolsByCategory } from "@/lib/tools/categories";
 
 type CategoryPageProps = {
@@ -63,7 +63,8 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
   return (
     <div className="mx-auto flex w-full max-w-content flex-1 items-start px-page py-page-lg md:px-page-lg">
       <div className="w-full space-y-10">
-        <Card className="w-full">
+        <Breadcrumbs items={[{ label: "首页", href: "/" }, { label: category.name }]} />
+        <div className="page-intro">
           <p className="text-sm font-medium text-muted-foreground">分类</p>
           <h1 className="mt-2 text-3xl font-semibold tracking-tight">
             {category.name}
@@ -71,7 +72,7 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
           <p className="mt-4 max-w-prose text-base text-muted-foreground">
             {category.description}
           </p>
-        </Card>
+        </div>
 
         <section aria-labelledby="category-tools-heading">
           <div className="mb-4">
@@ -86,7 +87,7 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
+          <div className="tool-grid">
             {tools.map((tool) => (
               <ToolCard key={tool.id} tool={tool} />
             ))}

@@ -37,9 +37,10 @@ export default function RootLayout({
   return (
     <html lang="zh-CN">
       <body className="min-h-screen bg-background font-sans text-foreground antialiased">
+        <a href="#main-content" className="skip-link">跳到主要内容</a>
         <div className="flex min-h-screen flex-col">
           <SiteHeader />
-          <main className="flex min-w-0 flex-1 flex-col">{children}</main>
+          <main id="main-content" className="flex min-w-0 flex-1 flex-col">{children}</main>
           <SiteFooter />
         </div>
       </body>

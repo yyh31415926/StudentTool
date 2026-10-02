@@ -1,7 +1,10 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { useToolUsage } from "../ToolUsageBoundary";
 import { Card } from "@/components/ui/Card";
+import { Button } from "@/components/ui/Button";
+import { CopyButton } from "@/components/ui/CopyButton";
 import { Input } from "@/components/ui/Input";
 import { Select } from "@/components/ui/Select";
 import {
@@ -56,6 +59,7 @@ export function ConverterTemplate({
       };
     }
   }, [fromUnitId, selectedGroup, toUnitId, value]);
+  useToolUsage(conversion.result !== undefined);
 
   const hasInvalidInput =
     Boolean(value.trim()) &&
@@ -77,6 +81,12 @@ export function ConverterTemplate({
         <p className="mt-1 text-sm text-muted-foreground">
           选择单位类型和单位，结果会实时更新。
         </p>
+      </div>
+
+      <div className="flex flex-wrap gap-2">
+        <Button size="sm" variant="secondary" onClick={() => setValue("100")}>试试示例</Button>
+        <Button size="sm" variant="secondary" onClick={() => { setFromUnitId(toUnitId); setToUnitId(fromUnitId); }}>交换单位 ⇄</Button>
+        <Button size="sm" variant="secondary" onClick={() => setValue("")}>清空</Button>
       </div>
 
       <div className="grid gap-4 md:grid-cols-3">
@@ -102,6 +112,7 @@ export function ConverterTemplate({
             inputMode="decimal"
             value={value}
             onChange={(event) => setValue(event.target.value)}
+            onKeyDown={(event) => { if (event.key === "Escape") setValue(""); }}
             placeholder="例如 100"
           />
         </label>
@@ -132,6 +143,7 @@ export function ConverterTemplate({
           onChange={setToUnitId}
         />
       </div>
+      <CopyButton text={conversion.result === undefined ? "" : String(conversion.result)} />
     </Card>
   );
 }
