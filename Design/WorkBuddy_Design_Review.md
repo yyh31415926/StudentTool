@@ -1,5 +1,7 @@
 # WorkBuddy 设计评审 · 学生数字工具基地
 
+> **历史方案说明（2026-10-03）**：本评审记录的是 2026-09-19 的提案。其首页“Hero 搜索框 + 独立分类卡片行”等建议已由 `Documents/WebsiteDesignDocument_v0.2.md` 2026-10-03 定案取代：全站只保留顶部搜索，空关键词下拉展示三个分类入口。下文保留原始评审内容作为决策历史，不作为当前首页实现依据。
+
 | 项目 | 内容 |
 | --- | --- |
 | 评审对象 | `Documents/WebsiteDesignDocument.md` v0.1（Status: Design Phase） |
