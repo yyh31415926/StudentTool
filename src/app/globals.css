@@ -142,10 +142,6 @@ textarea, .tabular-nums { font-family: var(--st-font-mono); }
 .hero-orbit { position: absolute; width: 15rem; height: 15rem; border: 1px solid var(--st-color-border); border-radius: 50%; background: radial-gradient(var(--st-color-primary-soft), transparent 70%); }
 .mascot { position: relative; width: 16rem; max-width: 100%; height: auto; }
 .hero-art-caption { position: relative; color: var(--st-color-muted-foreground); font-size: var(--text-sm); }
-.category-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1rem; }
-.category-card { display: flex; align-items: center; gap: .875rem; padding: 1.25rem; border-radius: var(--st-radius-card); border: 1px solid var(--st-color-border); background: var(--st-color-surface); transition: border-color var(--st-duration); }
-.category-card:hover { border-color: var(--st-color-primary); }
-.category-arrow { margin-left: auto; color: var(--st-color-muted-foreground); }
 .tool-icon { display: inline-flex; justify-content: center; align-items: center; width: 2.75rem; height: 2.75rem; flex-shrink: 0; border-radius: var(--st-radius-control); background: var(--st-color-primary-soft); color: var(--st-color-primary); font: 600 var(--text-xl) var(--st-font-mono); }
 .tool-icon-text { background: var(--st-color-mint); color: var(--st-color-mint-ink); }
 .tool-icon-dev { background: var(--st-color-peach); color: var(--st-color-peach-ink); }
@@ -178,10 +174,7 @@ textarea, .tabular-nums { font-family: var(--st-font-mono); }
   .home-hero { grid-template-columns: 1fr; padding: 1.75rem 0; }
   .hero-title { font-size: var(--text-2xl); }
   .hero-art { display: none; }
-  .category-grid, .tool-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .75rem; }
-  .category-card { flex-wrap: wrap; padding: 1rem; gap: .75rem; }
-  .category-card:last-child { grid-column: 1 / -1; }
-  .category-card p, .category-arrow { display: none; }
+  .tool-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .75rem; }
   .tool-card-link { padding: 1rem; }
   .tool-card h3 { font-size: var(--text-base); }
   .tool-summary, p.text-sm, .tool-page .text-sm { font-size: var(--text-base); }
