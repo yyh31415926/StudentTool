@@ -7,9 +7,15 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "test": "vitest run"
+    "test": "vitest run",
+    "archive:assets": "node scripts/sync-archive-assets.mts",
+    "predev": "npm run archive:assets",
+    "prebuild": "npm run archive:assets",
+    "packager:prepare": "node scripts/packager/run.mts prepare",
+    "packager:worker": "node scripts/packager/run.mts worker"
   },
   "dependencies": {
+    "7z-wasm": "1.2.0",
     "jsqr": "^1.4.0",
     "next": "16.3.5",
     "qrcode": "^1.5.4",
@@ -23,6 +29,7 @@
     "@types/qrcode": "^1.5.6",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "esbuild": "0.28.2",
     "eslint": "^9",
     "eslint-config-next": "16.3.5",
     "tailwindcss": "^4",

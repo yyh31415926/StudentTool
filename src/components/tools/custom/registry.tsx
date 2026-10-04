@@ -1,4 +1,6 @@
 import type { ComponentType } from "react";
+import { ArchiveTool } from "./archive/ArchiveTool";
+import { PythonPackageTool } from "./python-package/PythonPackageTool";
 import { ImageOcrTool } from "./image-ocr/ImageOcrTool";
 import { QRCodeTool } from "./qrcode/QRCodeTool";
 
@@ -21,6 +23,8 @@ type ToolCustomComponent = ComponentType<ToolCustomProps>;
 export const customToolRegistry: Readonly<
   Partial<Record<string, ToolCustomComponent>>
 > = {
+  archive: ArchiveTool,
+  "python-package": PythonPackageTool,
   qrcode: QRCodeTool,
   "image-ocr": ImageOcrTool,
 };

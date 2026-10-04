@@ -1,4 +1,6 @@
 import type { ToolDefinition } from "@/types/tools";
+import { archiveTool } from "./archive";
+import { pythonPackageTool } from "./python-package";
 import { baseConvertTool } from "./base-convert";
 import { base64Tool } from "./base64";
 import { charCountTool } from "./char-count";
@@ -17,4 +19,6 @@ export const toolDefinitions = [
   urlEncodeTool,
   qrcodeTool,
   imageOcrTool,
+  archiveTool,
+  pythonPackageTool,
 ] satisfies readonly ToolDefinition[];

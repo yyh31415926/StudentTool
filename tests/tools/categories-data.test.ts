@@ -25,12 +25,13 @@ describe("registry-driven category data layer", () => {
     }
   });
 
-  it("assigns the eight registered tools to the correct categories", () => {
+  it("assigns the ten registered tools to the correct categories", () => {
     const bySlug = new Map(
       getAllCategories().map((category) => [category.slug, category]),
     );
 
     expect(bySlug.get("convert")?.tools.map((tool) => tool.id).sort()).toEqual([
+      "archive",
       "base-convert",
       "unit-convert",
     ]);
@@ -41,6 +42,7 @@ describe("registry-driven category data layer", () => {
     expect(bySlug.get("dev")?.tools.map((tool) => tool.id).sort()).toEqual([
       "base64",
       "json-format",
+      "python-package",
       "qrcode",
       "url-encode",
     ]);
@@ -48,6 +50,7 @@ describe("registry-driven category data layer", () => {
 
   it("returns tools for a known slug", () => {
     expect(getToolsByCategory("convert").map((tool) => tool.id).sort()).toEqual([
+      "archive",
       "base-convert",
       "unit-convert",
     ]);

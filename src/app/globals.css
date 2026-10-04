@@ -32,6 +32,7 @@
   --st-container-content: 72rem;
   --st-size-hero-character: 13rem;
   --st-container-favorites: 20rem;
+  --st-size-archive-panel: 22rem;
   --st-focus-ring-width: 0.125rem;
   --st-focus-ring-offset: 0.125rem;
 }
@@ -168,11 +169,22 @@ textarea, .tabular-nums { font-family: var(--st-font-mono); }
 .tool-page input:not([type=file]):not([type=color]), .tool-page textarea { font-family: var(--st-font-mono); }
 .tool-page textarea { min-height: 12rem; }
 .tool-page > div > .rounded-card { box-shadow: none; }
+body:has(.archive-tool) { min-width: 0; }
+body:has(.package-tool) { min-width: 0; }
+.archive-panels { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--st-spacing-page); }
+.archive-panel { min-width: 0; min-height: var(--st-size-archive-panel); padding: var(--st-spacing-page); border: 1px solid var(--st-color-border); border-radius: var(--st-radius-card); background: var(--st-color-surface); }
+.archive-dragging { border-color: var(--st-color-primary); background: var(--st-color-primary-soft); }
+.archive-control { min-height: var(--st-spacing-touch); padding: .5rem .75rem; border: 1px solid var(--st-color-border); border-radius: var(--st-radius-control); background: var(--st-color-surface); }
+.archive-file-list { max-height: var(--st-size-archive-panel); overflow-y: auto; }
+.archive-file-row { display: flex; justify-content: space-between; align-items: center; gap: .5rem; padding: .5rem 0; border-bottom: 1px solid var(--st-color-border); }
+.archive-name { display: block; overflow-wrap: anywhere; }
+.archive-download { display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; min-height: var(--st-spacing-touch); padding: .5rem .75rem; color: var(--st-color-primary); text-decoration: underline; }
 .page-intro { padding: 1rem 0 .5rem; }
 .skip-link { position: fixed; top: .5rem; left: 1rem; z-index: 100; padding: .75rem; background: var(--st-color-surface); transform: translateY(-200%); }
 .skip-link:focus { transform: translateY(0); }
 @media (max-width: 1279px) { .header-inner { gap: 1rem; } }
 @media (max-width: 767px) {
+  .archive-panels { grid-template-columns: 1fr; }
   .desktop-nav { display: none; }
   .header-inner { grid-template-columns: auto minmax(0, 1fr); gap: .5rem; padding-top: .5rem; padding-bottom: .75rem; }
   .header-search { grid-column: 1 / -1; grid-row: 2; max-width: none; }

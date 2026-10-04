@@ -3,6 +3,7 @@
 
 # Next.js build output
 /.next/
+/public/archive/
 /out/
 
 # Test coverage
@@ -10,6 +11,7 @@
 
 # Production build output
 /build/
+/private/packager/
 
 # TypeScript incremental build info
 *.tsbuildinfo

@@ -1,0 +1,30 @@
+import { mkdir, writeFile, access } from "node:fs/promises";
+import path from "node:path";
+import { buildEnvironment, runCommand } from "../../src/lib/packager/process";
+import { atomicJson, dataRoot, getConfig } from "../../src/lib/packager/store";
+
+if (process.platform !== "win32") throw new Error("请在 Windows 电脑准备构建环境。");
+const index = process.argv.indexOf("--python");
+const executable = path.resolve(index >= 0 ? process.argv[index + 1] || "" : "");
+if (index < 0 || !path.isAbsolute(executable)) throw new Error("用法：npm run packager:prepare -- --python \"Python.exe完整路径\"");
+await access(executable);
+const scratch = path.join(dataRoot(), "setup-temp"); await mkdir(scratch, { recursive: true });
+const environment = buildEnvironment(scratch);
+let version = "";
+await runCommand(executable, ["-I", "-c", "import sys,struct; assert sys.version_info>=(3,8); assert struct.calcsize('P')==8; print(str(sys.version_info.major)+'.'+str(sys.version_info.minor))"], { cwd: scratch, env: environment, log: text => { version += text; } });
+version = version.trim(); if (!/^3\.\d+$/.test(version)) throw new Error("无法确认 Python 版本，要求 Python 3.8+ x64。");
+const id = `python-${version.replace('.', '-')}`;
+const root = path.join(dataRoot(), "engines", id); const venv = path.join(root, "venv"); const wheels = path.join(root, "wheels");
+await mkdir(wheels, { recursive: true });
+const run = (file: string, args: string[]) => runCommand(file, args, { cwd: scratch, env: environment, log: text => process.stdout.write(text) });
+await run(executable, ["-I", "-m", "venv", venv]);
+const python = path.join(venv, "Scripts", "python.exe");
+const toolchain = "pyinstaller==6.16.0\npyinstaller-hooks-contrib==2025.9\npackaging==25.0\nsetuptools==75.3.2\naltgraph==0.17.4\npefile==2023.2.7\npywin32-ctypes==0.2.3\n";
+await writeFile(path.join(wheels, "toolchain.txt"), toolchain);
+await run(python, ["-I", "-m", "pip", "--isolated", "download", "--disable-pip-version-check", "--only-binary=:all:", "--index-url", "https://pypi.org/simple", "--dest", wheels, "-r", path.join(wheels, "toolchain.txt")]);
+await run(python, ["-I", "-m", "pip", "--isolated", "install", "--disable-pip-version-check", "--no-index", "--find-links", wheels, "-r", path.join(wheels, "toolchain.txt")]);
+const config = await getConfig(); config.profiles = config.profiles.filter(profile => profile.id !== id);
+config.profiles.push({ id, label: `Python ${version} · Windows x64`, executable, wheelhouse: wheels });
+await atomicJson(path.join(dataRoot(), "config.json"), config);
+try { await access(path.join(dataRoot(), "state.json")); } catch { await atomicJson(path.join(dataRoot(), "state.json"), { enabled: false }); }
+console.log(`已准备 ${id}，PyInstaller 6.16.0。运行 npm run packager:worker 启动本机任务服务。`);

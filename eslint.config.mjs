@@ -11,6 +11,9 @@ const eslintConfig = defineConfig([
     ".next/**",
     "out/**",
     "build/**",
+    "private/**",
+    // Generated Worker and unmodified upstream WASM loader; lint their TypeScript source instead.
+    "public/archive/**",
     "next-env.d.ts",
   ]),
 ]);
