@@ -6,11 +6,13 @@ import { useToolUsage } from "../../ToolUsageBoundary";
 import { PackageSettings } from "./PackageSettings";
 import { droppedFiles, metadata, unpackInputs, type UploadedFile } from "./project-input";
 import { parseReceipt } from "@/lib/packager/receipt";
+import { PrivateAccessPanel } from "@/components/packager/PrivateAccessPanel";
 const defaults: PackageOptions = { entry: "", name: "我的程序", pythonId: "", output: "onefile", console: true, requirements: "", resources: [], hiddenImports: [], icon: "" };
 type Ticket = { token: string; job: PublicJob };
 export function PythonPackageTool() {
   const [files, setFiles] = useState<UploadedFile[]>([]); const [options, setOptions] = useState(defaults);
   const [profiles, setProfiles] = useState<{ id: string; label: string }[]>([]); const [ready, setReady] = useState(false);
+  const [service, setService] = useState({ mode: "private", serviceReady: false, authorized: false });
   const [notice, setNotice] = useState("正在检查本机打包服务…"); const [error, setError] = useState(""); const [busy, setBusy] = useState(false);
   const [tickets, setTickets] = useState<Ticket[]>([]); const fileInput = useRef<HTMLInputElement>(null); const directoryInput = useRef<HTMLInputElement>(null);
   const receiptInput = useRef<HTMLInputElement>(null);
@@ -19,13 +21,13 @@ export function PythonPackageTool() {
   useEffect(() => { mounted.current = true; return () => { mounted.current = false; polls.current?.abort(); }; }, []);
   async function status() {
     try { const response = await fetch("/api/packager/status", { cache: "no-store" }); const body = await response.json(); if (!response.ok) throw new Error(body.error);
-      setProfiles(body.profiles); setReady(body.ready); setNotice(body.ready ? "本机试用阶段 · 单任务构建，其余排队。" : "本机服务尚未就绪。请在本机执行准备与 Worker 启动命令。");
-      setOptions(value => ({ ...value, pythonId: value.pythonId || body.profiles[0]?.id || "" }));
+      setProfiles(body.profiles); setReady(body.ready); setNotice(body.reason); setService(body);
+      setOptions(value => ({ ...value, pythonId: body.profiles.some((profile: { id: string }) => profile.id === value.pythonId) ? value.pythonId : body.profiles[0]?.id || "" }));
     } catch (error) { setReady(false); setNotice(error instanceof Error ? error.message : "无法查询本机服务。"); }
   }
   useEffect(() => { let active = true; const controller = new AbortController();
     void fetch("/api/packager/status", { cache: "no-store", signal: controller.signal }).then(async response => { const body = await response.json(); if (!active) return;
-      if (!response.ok) { setNotice(body.error); return; } setProfiles(body.profiles); setReady(body.ready); setOptions(value => ({ ...value, pythonId: body.profiles[0]?.id || "" })); setNotice(body.ready ? "本机试用阶段 · 单任务构建，其余排队。" : "本机服务尚未就绪。请先准备并启动打包服务。");
+      if (!response.ok) { setNotice(body.error); return; } setProfiles(body.profiles); setReady(body.ready); setService(body); setOptions(value => ({ ...value, pythonId: body.profiles[0]?.id || "" })); setNotice(body.reason);
     }).catch(() => { if (active) setNotice("无法连接本机打包服务。"); }); return () => { active = false; controller.abort(); };
   }, []);
   useEffect(() => {
@@ -51,7 +53,7 @@ export function PythonPackageTool() {
     try { const valid = validatePackageOptions(options, metadata(files)); const form = new FormData(); form.set("options", JSON.stringify(valid)); form.set("paths", JSON.stringify(files.map(item => item.path))); files.forEach(item => form.append("files", item.file));
       const response = await fetch("/api/packager/jobs", { method: "POST", body: form }); const body = await response.json(); if (!response.ok) throw new Error(body.error);
       if (mounted.current) { setTickets(value => [{ job: body.job, token: body.token }, ...value]); setNotice("任务已提交。离开页面前可保存任务凭证，下次导入凭证继续查看和下载。"); }
-    } catch (error) { if (mounted.current) setError(error instanceof Error ? error.message : "提交失败。"); } finally { if (mounted.current) setBusy(false); }
+    } catch (error) { if (mounted.current) { setError(error instanceof Error ? error.message : "提交失败。"); await status(); } } finally { if (mounted.current) setBusy(false); }
   }
   async function action(ticket: Ticket, method: "POST" | "DELETE") {
     try { const response = await fetch(`/api/packager/jobs/${ticket.job.id}`, { method, headers: { "x-task-token": ticket.token } }); const body = await response.json(); if (!response.ok) throw new Error(body.error); setNotice(body.message); if (method === "DELETE") setTickets(value => value.filter(item => item.job.id !== ticket.job.id)); }
@@ -75,7 +77,8 @@ export function PythonPackageTool() {
   }
   return <div className="package-tool space-y-4">
     <div role="status" className="rounded-control bg-surface-muted p-4"><p>{notice}</p><Button variant="ghost" onClick={status}>刷新服务状态</Button></div>
-    <p className="text-sm text-muted-foreground">项目将发送到当前网站的 Windows 构建电脑，临时保存 24 小时。仅处理你信任的项目；输入最多 50 MB / 1000 项。请勿上传密码或密钥。</p>
+    {service.mode === "private" && <PrivateAccessPanel authorized={service.authorized} serviceReady={service.serviceReady} onChange={status} />}
+    <p className="text-sm text-muted-foreground">项目将发送到当前网站的 Windows 构建电脑，{service.mode === "private" ? "在本机直接构建，仅接收可信项目" : "在 Windows Sandbox 隔离环境中处理"}；临时保存 24 小时。输入最多 50 MB / 1000 项。请勿上传密码或密钥。</p>
     <div className="archive-panels">
       <section tabIndex={0} aria-label="项目输入" className="archive-panel space-y-3" onDragOver={event => event.preventDefault()} onDrop={event => { event.preventDefault(); if (!busy) { void droppedFiles(event.dataTransfer.items).then(add).catch(error => setError(error.message)); } }} onPaste={event => { const incoming = Array.from(event.clipboardData.files); if (incoming.length && !busy) { event.preventDefault(); void add(incoming.map(file => ({ path: file.name, file }))); } }}>
         <h2 className="text-lg font-semibold">项目文件</h2><p className="text-sm text-muted-foreground">拖入项目、文件夹或 ZIP；也可选择或粘贴文件。文件夹会保留相对路径。</p>

@@ -12,7 +12,9 @@
     "predev": "npm run archive:assets",
     "prebuild": "npm run archive:assets",
     "packager:prepare": "node scripts/packager/run.mts prepare",
-    "packager:worker": "node scripts/packager/run.mts worker"
+    "packager:worker": "node scripts/packager/run.mts worker",
+    "packager:admin-setup": "node scripts/packager/run.mts setup-admin",
+    "packager:verify-isolation": "node scripts/packager/run.mts verify-isolation"
   },
   "dependencies": {
     "7z-wasm": "1.2.0",

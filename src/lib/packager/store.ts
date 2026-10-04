@@ -38,8 +38,9 @@ export async function authorizedJob(id: string, token: string): Promise<PackageJ
   return job;
 }
 export async function publicJob(job: PackageJob): Promise<PublicJob> {
-  const { tokenHash: omitted, ...publicFields } = job;
+  const { tokenHash: omitted, usageRevision: privateRevision, ...publicFields } = job;
   void omitted;
+  void privateRevision;
   let log = "";
   try { log = await readFile(path.join(jobDirectory(job.id), "build.log"), "utf8"); } catch { /* No log yet. */ }
   const queued = (await listJobs()).filter(item => item.status === "queued");
@@ -47,6 +48,10 @@ export async function publicJob(job: PackageJob): Promise<PublicJob> {
 }
 export async function workerAlive(): Promise<boolean> {
   try { const beat = JSON.parse(await readFile(path.join(dataRoot(), "heartbeat.json"), "utf8")); return Date.now() - beat.at < 15_000; }
+  catch { return false; }
+}
+export async function privateWorkerAlive(): Promise<boolean> {
+  try { const beat = JSON.parse(await readFile(path.join(dataRoot(), "heartbeat.json"), "utf8")); return Number.isFinite(beat.at) && Date.now() >= beat.at && Date.now() - beat.at < 15_000 && Array.isArray(beat.modes) && beat.modes.includes("private"); }
   catch { return false; }
 }
 export async function removeJob(id: string) {

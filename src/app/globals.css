@@ -173,6 +173,7 @@ body:has(.archive-tool) { min-width: 0; }
 body:has(.package-tool) { min-width: 0; }
 .archive-panels { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--st-spacing-page); }
 .archive-panel { min-width: 0; min-height: var(--st-size-archive-panel); padding: var(--st-spacing-page); border: 1px solid var(--st-color-border); border-radius: var(--st-radius-card); background: var(--st-color-surface); }
+.packager-access-panel { min-height: 0; }
 .archive-dragging { border-color: var(--st-color-primary); background: var(--st-color-primary-soft); }
 .archive-control { min-height: var(--st-spacing-touch); padding: .5rem .75rem; border: 1px solid var(--st-color-border); border-radius: var(--st-radius-control); background: var(--st-color-surface); }
 .archive-file-list { max-height: var(--st-size-archive-panel); overflow-y: auto; }

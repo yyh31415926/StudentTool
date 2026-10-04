@@ -2,9 +2,9 @@ export const PACKAGE_LIMITS = { inputBytes: 50 * 1024 ** 2, uploadBytes: 54 * 10
 export type PackageOptions = { entry: string; name: string; pythonId: string; output: "onefile" | "onedir"; console: boolean; requirements: string; resources: string[]; hiddenImports: string[]; icon: string };
 export type ProjectFile = { path: string; size: number };
 export type PackageState = "queued" | "preparing" | "installing" | "building" | "succeeded" | "failed" | "cancelled";
-export type PackageJob = { id: string; tokenHash: string; createdAt: number; updatedAt: number; expiresAt: number; status: PackageState; options: PackageOptions; message: string; artifact?: string; artifactBytes?: number };
-export type PublicJob = Omit<PackageJob, "tokenHash"> & { queuePosition?: number; log?: string };
-export type PythonProfile = { id: string; label: string; executable: string; wheelhouse: string };
+export type PackageJob = { id: string; tokenHash: string; createdAt: number; updatedAt: number; expiresAt: number; status: PackageState; options: PackageOptions; message: string; execution?: "isolated" | "private"; usageRevision?: string; artifact?: string; artifactBytes?: number };
+export type PublicJob = Omit<PackageJob, "tokenHash" | "usageRevision"> & { queuePosition?: number; log?: string };
+export type PythonProfile = { id: string; label: string; executable: string; wheelhouse: string; generation?: string };
 export type PackagerConfig = { profiles: PythonProfile[] };
 export const PACKAGE_STATUS_LABELS: Record<PackageState, string> = { queued: "等待中", preparing: "准备环境", installing: "安装依赖", building: "构建中", succeeded: "成功", failed: "失败", cancelled: "已取消" };
 

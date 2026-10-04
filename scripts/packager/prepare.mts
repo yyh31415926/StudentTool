@@ -1,4 +1,5 @@
 import { mkdir, writeFile, access } from "node:fs/promises";
+import { randomUUID } from "node:crypto";
 import path from "node:path";
 import { buildEnvironment, runCommand } from "../../src/lib/packager/process";
 import { atomicJson, dataRoot, getConfig } from "../../src/lib/packager/store";
@@ -24,7 +25,7 @@ await writeFile(path.join(wheels, "toolchain.txt"), toolchain);
 await run(python, ["-I", "-m", "pip", "--isolated", "download", "--disable-pip-version-check", "--only-binary=:all:", "--index-url", "https://pypi.org/simple", "--dest", wheels, "-r", path.join(wheels, "toolchain.txt")]);
 await run(python, ["-I", "-m", "pip", "--isolated", "install", "--disable-pip-version-check", "--no-index", "--find-links", wheels, "-r", path.join(wheels, "toolchain.txt")]);
 const config = await getConfig(); config.profiles = config.profiles.filter(profile => profile.id !== id);
-config.profiles.push({ id, label: `Python ${version} · Windows x64`, executable, wheelhouse: wheels });
+config.profiles.push({ id, label: `Python ${version} · Windows x64`, executable, wheelhouse: wheels, generation: randomUUID() });
 await atomicJson(path.join(dataRoot(), "config.json"), config);
-try { await access(path.join(dataRoot(), "state.json")); } catch { await atomicJson(path.join(dataRoot(), "state.json"), { enabled: false }); }
+try { await access(path.join(dataRoot(), "state.json")); } catch { await atomicJson(path.join(dataRoot(), "state.json"), { schemaVersion: 2, mode: "private", enabled: false, updatedAt: 0 }); }
 console.log(`已准备 ${id}，PyInstaller 6.16.0。运行 npm run packager:worker 启动本机任务服务。`);

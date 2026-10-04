@@ -2,13 +2,13 @@ import { lstat } from "node:fs/promises";
 import { createReadStream } from "node:fs";
 import { Readable } from "node:stream";
 import path from "node:path";
-import { assertLocalRequest, failure, PackageHttpError } from "@/lib/packager/http";
+import { assertSiteRequest, boundedForm, failure, PackageHttpError } from "@/lib/packager/http";
 import { authorizedJob, jobDirectory } from "@/lib/packager/store";
 export const runtime = "nodejs";
 export async function POST(request: Request, context: { params: Promise<{ id: string }> }) {
   try {
-    assertLocalRequest(request, true); const { id } = await context.params;
-    const form = await request.formData(); const job = await authorizedJob(id, String(form.get("token") || ""));
+    assertSiteRequest(request, true); const { id } = await context.params;
+    const form = await boundedForm(request, 4096); const job = await authorizedJob(id, String(form.get("token") || ""));
     const log = form.get("kind") === "log";
     if (!log && (job.status !== "succeeded" || !job.artifact)) throw new PackageHttpError("打包结果尚未生成。");
     const filename = log ? "build.log" : job.artifact!;

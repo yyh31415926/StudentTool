@@ -2,6 +2,7 @@
 import { useEffect, useId, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Input } from "@/components/ui/Input";
+import { AdminLoginDialog } from "@/components/packager/AdminLoginDialog";
 import type { CategoryOption } from "@/lib/tools/categories";
 import {
   resolveSearchView,
@@ -17,7 +18,9 @@ export type ToolSearchProps = {
 };
 
 export function ToolSearch({ tools, categories }: ToolSearchProps) {
+  const adminEntry = process.env.NEXT_PUBLIC_PACKAGER_ADMIN_ENTRY?.trim() || ":admin";
   const [query, setQuery] = useState("");
+  const [adminLoginOpen, setAdminLoginOpen] = useState(false);
   const [open, setOpen] = useState(false);
   const [activeTool, setActiveTool] = useState(0);
   const [activeCategory, setActiveCategory] = useState(0);
@@ -58,6 +61,7 @@ export function ToolSearch({ tools, categories }: ToolSearchProps) {
       onFocus={() => setOpen(true)} onChange={(event) => { setQuery(event.target.value); resetActive(); setOpen(true); }}
       onKeyDown={(event) => {
         if (event.nativeEvent.isComposing) return;
+        if (event.key === "Enter" && query.trim() === adminEntry) { event.preventDefault(); setOpen(false); setQuery(""); setAdminLoginOpen(true); return; }
         if (event.key === "Escape") { setOpen(false); return; }
         if (event.key === "ArrowDown" || event.key === "ArrowUp") {
           event.preventDefault(); setOpen(true);
@@ -83,5 +87,6 @@ export function ToolSearch({ tools, categories }: ToolSearchProps) {
       {view === "tools" && results.length === 0 && <p role="status" className="p-4 text-muted-foreground">没有找到匹配的工具，换个关键词试试。</p>}
       {view === "categories" && categories.length === 0 && <p role="status" className="p-4 text-muted-foreground">暂时没有可浏览的分类。</p>}
     </div>}
+    {adminLoginOpen && <AdminLoginDialog onClose={(restoreFocus = true) => { setAdminLoginOpen(false); if (restoreFocus) document.querySelector<HTMLInputElement>('input[aria-label="搜索工具"]')?.focus(); }} />}
   </div>;
 }

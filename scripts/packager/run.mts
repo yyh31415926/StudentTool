@@ -2,7 +2,7 @@ import { build } from "esbuild";
 import { spawn } from "node:child_process";
 import path from "node:path";
 const mode = process.argv[2];
-if (mode !== "prepare" && mode !== "worker") throw new Error("请选择 prepare 或 worker。");
+if (mode !== "prepare" && mode !== "worker" && mode !== "setup-admin" && mode !== "verify-isolation") throw new Error("请选择 prepare、worker、setup-admin 或 verify-isolation。");
 const target = path.resolve(`private/packager/runtime/${mode}.mjs`);
 await build({ entryPoints: [path.resolve(`scripts/packager/${mode}.mts`)], outfile: target, bundle: true, platform: "node", format: "esm", target: "node22" });
 const child = spawn(process.execPath, [target, ...process.argv.slice(3)], { stdio: ["inherit", "inherit", "inherit", "ipc"], windowsHide: true, shell: false });
